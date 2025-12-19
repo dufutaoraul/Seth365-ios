@@ -1,0 +1,172 @@
+/*
+  Localizable.strings (简体中文)
+  Seth365
+*/
+
+// MARK: - 通用
+"cancel" = "取消";
+"confirm" = "确定";
+"save" = "保存";
+"delete" = "删除";
+"done" = "完成";
+"settings" = "设置";
+"ok" = "好的";
+
+// MARK: - 主标签栏
+"tab.calendar" = "日历";
+"tab.today" = "今日";
+"tab.settings" = "设置";
+
+// MARK: - 日历页面
+"calendar.title" = "日历";
+"calendar.locked.title" = "尚未解锁";
+"calendar.locked.tomorrow" = "明天就能解锁 %@ 的壁纸啦～\n\n好饭不怕晚，精彩值得等待！";
+"calendar.locked.days" = "还有 %d 天就能解锁 %@ 的壁纸啦～\n\n耐心等待，惊喜即将来临！";
+"calendar.locked.future" = "%@ 的壁纸还需要等待一段时间～\n\n好东西值得等待！";
+
+// MARK: - 壁纸列表
+"wallpaper.list.title" = "%@的壁纸";
+"wallpaper.filter.all" = "全部";
+"wallpaper.count" = "%d张壁纸";
+
+// MARK: - 壁纸详情
+"wallpaper.detail.save" = "保存";
+"wallpaper.detail.poster" = "生成海报";
+"wallpaper.save.success" = "保存成功";
+"wallpaper.save.success.message" = "图片已保存到相册。\n\n设置壁纸方法：\n1. 打开「照片」App\n2. 找到刚保存的图片\n3. 点击分享按钮\n4. 选择「用作壁纸」";
+"wallpaper.save.failed" = "保存失败";
+"wallpaper.save.go_set" = "去设置壁纸";
+
+// MARK: - 海报编辑器
+"poster.title" = "生成海报";
+"poster.generate" = "生成海报";
+"poster.detecting" = "正在检测二维码位置...";
+"poster.qr.set" = "已设置二维码";
+"poster.qr.not_set" = "未设置二维码";
+"poster.qr.hint" = "拖动红框调整位置，捏合调整大小";
+"poster.qr.go_settings" = "请先在「设置」中上传二维码";
+"poster.detected" = "已识别到原图二维码位置";
+"poster.not_detected" = "未识别到二维码，使用默认位置";
+"poster.tip" = "提示：拖动移动位置 | 双指捏合调整大小";
+"poster.no_qr.title" = "请先设置二维码";
+"poster.no_qr.message" = "请先在「设置」中上传你的二维码图片";
+"poster.no_qr.go" = "去设置";
+"poster.save.success" = "保存成功";
+"poster.save.success.message" = "海报已保存到相册";
+
+// MARK: - 设置页面
+"settings.title" = "设置";
+"settings.my_qr" = "我的二维码";
+"settings.qr.set" = "已设置二维码";
+"settings.qr.not_set" = "未设置二维码";
+"settings.qr.hint" = "生成海报时会替换壁纸中的二维码";
+"settings.qr.select" = "选择二维码";
+"settings.qr.change" = "更换二维码";
+"settings.qr.delete" = "删除二维码";
+"settings.qr.delete.title" = "删除二维码";
+"settings.qr.delete.message" = "确定要删除已保存的二维码吗？";
+
+"settings.preferences" = "壁纸偏好";
+"settings.language" = "壁纸语言";
+"settings.orientation" = "壁纸方向";
+
+"settings.switch" = "壁纸切换设置";
+"settings.switch.range" = "切换范围";
+"settings.switch.random" = "随机选择序号";
+
+"settings.auto" = "自动换壁纸";
+"settings.auto.shortcuts" = "配置快捷指令";
+
+"settings.storage" = "存储";
+"settings.cache.size" = "缓存大小";
+"settings.cache.clear" = "清除缓存";
+"settings.cache.clear.title" = "清除缓存";
+"settings.cache.clear.message" = "这将清除所有已下载的壁纸缓存，下次查看时需要重新下载。";
+"settings.cache.calculating" = "计算中...";
+
+"settings.about" = "关于";
+"settings.version" = "版本";
+"settings.year" = "适用年份";
+"settings.daily_count" = "每日壁纸数量";
+
+// MARK: - 快捷指令指南
+"shortcuts.title" = "自动换壁纸";
+"shortcuts.subtitle" = "通过「快捷指令」实现自动切换壁纸";
+"shortcuts.mode.auto" = "自动切换";
+"shortcuts.mode.save" = "仅保存";
+
+"shortcuts.limitation.title" = "重要说明";
+"shortcuts.limitation.content" = "iOS 系统限制，App 无法直接设置壁纸。但可以通过「快捷指令」实现：";
+"shortcuts.limitation.1" = "Seth365 提供「获取壁纸」功能";
+"shortcuts.limitation.2" = "系统「快捷指令」有「设置壁纸」动作";
+"shortcuts.limitation.3" = "两者结合 = 自动切换壁纸！";
+
+"shortcuts.step1.title" = "在快捷指令中找到 Seth365";
+"shortcuts.step1.content" = "Seth365 的快捷指令已自动注册到系统，你可以在「快捷指令」App 中找到：";
+"shortcuts.get_wallpaper" = "获取 Seth365 壁纸";
+"shortcuts.get_wallpaper.hint" = "返回图片，配合「设置壁纸」使用";
+"shortcuts.save_wallpaper" = "保存 Seth365 壁纸到相册";
+"shortcuts.save_wallpaper.hint" = "直接保存到相册";
+"shortcuts.open_app" = "打开「快捷指令」App";
+"shortcuts.search_hint" = "在快捷指令App中搜索「Seth365」即可找到";
+
+"shortcuts.batch.title" = "批量设置技巧";
+"shortcuts.batch.content" = "想要每小时换一次壁纸？可以这样快速设置：";
+"shortcuts.batch.1" = "先创建一个自动化（比如 7:00）";
+"shortcuts.batch.2" = "长按这个自动化，选择「复制」";
+"shortcuts.batch.3" = "修改复制出来的自动化时间为 8:00";
+"shortcuts.batch.4" = "重复步骤 2-3，创建 9:00、10:00...";
+"shortcuts.batch.recommend" = "推荐设置的时间点：";
+"shortcuts.batch.times" = "7:00, 9:00, 12:00, 15:00, 18:00, 21:00";
+"shortcuts.batch.note" = "（每天6次切换，覆盖主要使用时段）";
+
+"shortcuts.triggers.title" = "可用的触发条件";
+"shortcuts.trigger.time" = "特定时间";
+"shortcuts.trigger.time.hint" = "每天早上7点自动切换";
+"shortcuts.trigger.app" = "打开 App 时";
+"shortcuts.trigger.app.hint" = "打开微信/抖音等常用App时切换";
+"shortcuts.trigger.charger" = "充电器断开时";
+"shortcuts.trigger.charger.hint" = "早上拔掉充电器时切换";
+"shortcuts.trigger.wifi" = "连接 WiFi 时";
+"shortcuts.trigger.wifi.hint" = "连接到家里WiFi时切换";
+"shortcuts.trigger.not_supported" = "不支持的触发方式";
+"shortcuts.trigger.unlock" = "• 解锁屏幕时（iOS系统限制）";
+"shortcuts.trigger.interval" = "• 每隔X分钟（不支持高频率触发）";
+"shortcuts.recommended" = "推荐";
+
+"shortcuts.current.title" = "当前设置";
+"shortcuts.current.language" = "语言";
+"shortcuts.current.orientation" = "方向";
+"shortcuts.current.range" = "切换范围";
+"shortcuts.current.random" = "随机序号";
+"shortcuts.current.yes" = "是";
+"shortcuts.current.no" = "否";
+"shortcuts.current.hint" = "快捷指令会使用这些默认设置，也可以在动作中单独修改";
+
+// MARK: - 语言选项
+"language.chinese" = "中文";
+"language.english" = "English";
+
+// MARK: - 方向选项
+"orientation.portrait" = "竖版";
+"orientation.landscape" = "横版";
+
+// MARK: - 日期范围选项
+"range.today" = "仅今天";
+"range.today.hint" = "从今天的8张壁纸中随机选择";
+"range.three_days" = "最近3天";
+"range.three_days.hint" = "从最近3天的24张壁纸中随机选择";
+"range.seven_days" = "最近7天";
+"range.seven_days.hint" = "从最近7天的56张壁纸中随机选择";
+"range.all" = "所有已解锁";
+"range.all.hint" = "从所有已解锁的壁纸中随机选择";
+"range.custom" = "自定义";
+"range.custom.hint" = "从自定义选择的日期中随机选择";
+
+// MARK: - 存储操作
+"storage.download" = "下载壁纸";
+"storage.check_update" = "检查更新";
+
+// MARK: - 关于
+"about.year_value" = "2026年";
+"about.daily_count_value" = "8张";

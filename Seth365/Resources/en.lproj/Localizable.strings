@@ -1,0 +1,172 @@
+/*
+  Localizable.strings (English)
+  Seth365
+*/
+
+// MARK: - Common
+"cancel" = "Cancel";
+"confirm" = "Confirm";
+"save" = "Save";
+"delete" = "Delete";
+"done" = "Done";
+"settings" = "Settings";
+"ok" = "OK";
+
+// MARK: - Main Tab Bar
+"tab.calendar" = "Calendar";
+"tab.today" = "Today";
+"tab.settings" = "Settings";
+
+// MARK: - Calendar Page
+"calendar.title" = "Calendar";
+"calendar.locked.title" = "Not Yet Unlocked";
+"calendar.locked.tomorrow" = "Wallpapers for %@ will be unlocked tomorrow!\n\nGood things are worth waiting for!";
+"calendar.locked.days" = "Only %d days until wallpapers for %@ are unlocked!\n\nBe patient, surprises are coming!";
+"calendar.locked.future" = "Wallpapers for %@ need more time to unlock.\n\nGood things are worth waiting for!";
+
+// MARK: - Wallpaper List
+"wallpaper.list.title" = "Wallpapers for %@";
+"wallpaper.filter.all" = "All";
+"wallpaper.count" = "%d wallpapers";
+
+// MARK: - Wallpaper Detail
+"wallpaper.detail.save" = "Save";
+"wallpaper.detail.poster" = "Create Poster";
+"wallpaper.save.success" = "Saved Successfully";
+"wallpaper.save.success.message" = "Image saved to Photos.\n\nTo set as wallpaper:\n1. Open Photos app\n2. Find the saved image\n3. Tap Share button\n4. Choose \"Use as Wallpaper\"";
+"wallpaper.save.failed" = "Save Failed";
+"wallpaper.save.go_set" = "Set as Wallpaper";
+
+// MARK: - Poster Editor
+"poster.title" = "Create Poster";
+"poster.generate" = "Generate Poster";
+"poster.detecting" = "Detecting QR code position...";
+"poster.qr.set" = "QR Code Set";
+"poster.qr.not_set" = "QR Code Not Set";
+"poster.qr.hint" = "Drag to move, pinch to resize";
+"poster.qr.go_settings" = "Please upload QR code in Settings first";
+"poster.detected" = "QR code position detected";
+"poster.not_detected" = "QR code not detected, using default position";
+"poster.tip" = "Tip: Drag to move | Pinch to resize";
+"poster.no_qr.title" = "Please Set QR Code First";
+"poster.no_qr.message" = "Please upload your QR code image in Settings first";
+"poster.no_qr.go" = "Go to Settings";
+"poster.save.success" = "Saved Successfully";
+"poster.save.success.message" = "Poster saved to Photos";
+
+// MARK: - Settings Page
+"settings.title" = "Settings";
+"settings.my_qr" = "My QR Code";
+"settings.qr.set" = "QR Code Set";
+"settings.qr.not_set" = "QR Code Not Set";
+"settings.qr.hint" = "Will replace QR code in wallpaper when creating poster";
+"settings.qr.select" = "Select QR Code";
+"settings.qr.change" = "Change QR Code";
+"settings.qr.delete" = "Delete QR Code";
+"settings.qr.delete.title" = "Delete QR Code";
+"settings.qr.delete.message" = "Are you sure you want to delete the saved QR code?";
+
+"settings.preferences" = "Wallpaper Preferences";
+"settings.language" = "Wallpaper Language";
+"settings.orientation" = "Wallpaper Orientation";
+
+"settings.switch" = "Wallpaper Switch Settings";
+"settings.switch.range" = "Switch Range";
+"settings.switch.random" = "Random Index";
+
+"settings.auto" = "Auto Change Wallpaper";
+"settings.auto.shortcuts" = "Configure Shortcuts";
+
+"settings.storage" = "Storage";
+"settings.cache.size" = "Cache Size";
+"settings.cache.clear" = "Clear Cache";
+"settings.cache.clear.title" = "Clear Cache";
+"settings.cache.clear.message" = "This will clear all downloaded wallpaper cache. You will need to re-download when viewing.";
+"settings.cache.calculating" = "Calculating...";
+
+"settings.about" = "About";
+"settings.version" = "Version";
+"settings.year" = "Valid Year";
+"settings.daily_count" = "Daily Wallpapers";
+
+// MARK: - Shortcuts Guide
+"shortcuts.title" = "Auto Wallpaper";
+"shortcuts.subtitle" = "Use Shortcuts to automatically change wallpaper";
+"shortcuts.mode.auto" = "Auto Switch";
+"shortcuts.mode.save" = "Save Only";
+
+"shortcuts.limitation.title" = "Important Notice";
+"shortcuts.limitation.content" = "Due to iOS limitations, apps cannot directly set wallpaper. But you can use Shortcuts:";
+"shortcuts.limitation.1" = "Seth365 provides \"Get Wallpaper\" function";
+"shortcuts.limitation.2" = "System Shortcuts has \"Set Wallpaper\" action";
+"shortcuts.limitation.3" = "Combine both = Auto wallpaper change!";
+
+"shortcuts.step1.title" = "Find Seth365 in Shortcuts";
+"shortcuts.step1.content" = "Seth365 shortcuts are automatically registered. Find them in the Shortcuts app:";
+"shortcuts.get_wallpaper" = "Get Seth365 Wallpaper";
+"shortcuts.get_wallpaper.hint" = "Returns image, use with \"Set Wallpaper\"";
+"shortcuts.save_wallpaper" = "Save Seth365 Wallpaper to Photos";
+"shortcuts.save_wallpaper.hint" = "Directly saves to Photos";
+"shortcuts.open_app" = "Open Shortcuts App";
+"shortcuts.search_hint" = "Search \"Seth365\" in the Shortcuts app";
+
+"shortcuts.batch.title" = "Batch Setup Tips";
+"shortcuts.batch.content" = "Want to change wallpaper every hour? Here's how:";
+"shortcuts.batch.1" = "Create one automation (e.g., 7:00)";
+"shortcuts.batch.2" = "Long press the automation, select \"Duplicate\"";
+"shortcuts.batch.3" = "Change the duplicated time to 8:00";
+"shortcuts.batch.4" = "Repeat steps 2-3 for 9:00, 10:00...";
+"shortcuts.batch.recommend" = "Recommended times:";
+"shortcuts.batch.times" = "7:00, 9:00, 12:00, 15:00, 18:00, 21:00";
+"shortcuts.batch.note" = "(6 changes per day, covering main usage periods)";
+
+"shortcuts.triggers.title" = "Available Triggers";
+"shortcuts.trigger.time" = "Specific Time";
+"shortcuts.trigger.time.hint" = "Auto switch at 7 AM daily";
+"shortcuts.trigger.app" = "When Opening App";
+"shortcuts.trigger.app.hint" = "Switch when opening WeChat/TikTok etc.";
+"shortcuts.trigger.charger" = "When Charger Disconnects";
+"shortcuts.trigger.charger.hint" = "Switch when unplugging in the morning";
+"shortcuts.trigger.wifi" = "When Connecting WiFi";
+"shortcuts.trigger.wifi.hint" = "Switch when connecting to home WiFi";
+"shortcuts.trigger.not_supported" = "Unsupported Triggers";
+"shortcuts.trigger.unlock" = "• When unlocking screen (iOS limitation)";
+"shortcuts.trigger.interval" = "• Every X minutes (high frequency not supported)";
+"shortcuts.recommended" = "Recommended";
+
+"shortcuts.current.title" = "Current Settings";
+"shortcuts.current.language" = "Language";
+"shortcuts.current.orientation" = "Orientation";
+"shortcuts.current.range" = "Switch Range";
+"shortcuts.current.random" = "Random Index";
+"shortcuts.current.yes" = "Yes";
+"shortcuts.current.no" = "No";
+"shortcuts.current.hint" = "Shortcuts will use these default settings, or you can modify in the action";
+
+// MARK: - Language Options
+"language.chinese" = "Chinese";
+"language.english" = "English";
+
+// MARK: - Orientation Options
+"orientation.portrait" = "Portrait";
+"orientation.landscape" = "Landscape";
+
+// MARK: - Date Range Options
+"range.today" = "Today Only";
+"range.today.hint" = "Randomly select from today's 8 wallpapers";
+"range.three_days" = "Last 3 Days";
+"range.three_days.hint" = "Randomly select from 24 wallpapers of last 3 days";
+"range.seven_days" = "Last 7 Days";
+"range.seven_days.hint" = "Randomly select from 56 wallpapers of last 7 days";
+"range.all" = "All Unlocked";
+"range.all.hint" = "Randomly select from all unlocked wallpapers";
+"range.custom" = "Custom";
+"range.custom.hint" = "Randomly select from custom selected dates";
+
+// MARK: - Storage Operations
+"storage.download" = "Download Wallpapers";
+"storage.check_update" = "Check for Updates";
+
+// MARK: - About
+"about.year_value" = "2026";
+"about.daily_count_value" = "8";

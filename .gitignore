@@ -1,0 +1,42 @@
+# Xcode
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcworkspace
+!default.xcworkspace
+*.hmap
+*.ipa
+DerivedData/
+build/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# 壁纸图片（太大无法上传到 GitHub，需要单独下载）
+Seth365/Resources/Wallpapers/**/*.png
+
+# 保留文件夹结构
+!Seth365/Resources/Wallpapers/**/
+!Seth365/Resources/Wallpapers/**/.gitkeep
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Carthage
+Carthage/Build/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# 打包文件
+*.zip
