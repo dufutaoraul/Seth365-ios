@@ -51,9 +51,25 @@ class WallpaperPreloadService: ObservableObject {
         let settings = UserDefaultsManager.shared
         let allWallpapers = getWallpapersToPreload(range: settings.switchDateRange)
 
+        // 调试：检查第一个壁纸的 Bundle 路径
+        if let firstWallpaper = allWallpapers.first {
+            appLog(.debug, "检查壁纸: \(firstWallpaper.fileName)", source: "Preload")
+            appLog(.debug, "Bundle相对路径: \(firstWallpaper.bundleRelativePath)", source: "Preload")
+            if let fullPath = firstWallpaper.bundleFullPath {
+                appLog(.debug, "Bundle完整路径: \(fullPath)", source: "Preload")
+                let exists = FileManager.default.fileExists(atPath: fullPath)
+                appLog(.debug, "文件存在: \(exists)", source: "Preload")
+            } else {
+                appLog(.error, "无法获取 Bundle 资源路径", source: "Preload")
+            }
+            appLog(.debug, "isInBundle: \(firstWallpaper.isInBundle)", source: "Preload")
+        }
+
         // 过滤出需要下载的壁纸（不在 Bundle 中的）
         let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle }
         let bundledCount = allWallpapers.count - wallpapersToDownload.count
+
+        appLog(.info, "壁纸统计: 总数=\(allWallpapers.count), 内置=\(bundledCount), 需下载=\(wallpapersToDownload.count)", source: "Preload")
 
         totalCount = wallpapersToDownload.count
 

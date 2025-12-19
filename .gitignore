@@ -20,12 +20,7 @@ build/
 .LSOverride
 ._*
 
-# 壁纸图片（太大无法上传到 GitHub，需要单独下载）
-Seth365/Resources/Wallpapers/**/*.png
-
-# 保留文件夹结构
-!Seth365/Resources/Wallpapers/**/
-!Seth365/Resources/Wallpapers/**/.gitkeep
+# 壁纸图片 - 已包含在仓库中，方便同事直接使用
 
 # CocoaPods
 Pods/

@@ -61,21 +61,16 @@ struct Wallpaper: Identifiable, Equatable, Hashable {
     }
 
     /// Bundle 内的资源相对路径（含扩展名）
-    /// - 2025年格式: "Wallpapers/25/12/25.12.21.CS1.png"
-    /// - 2026年格式: "Wallpapers/1/1.1.CS1.png"
+    /// Xcode 16 的同步文件夹会把文件直接放到 app 根目录，不保留子文件夹结构
     var bundleRelativePath: String {
-        if year == 2025 {
-            let yearFolder = year % 100  // 25
-            return "Wallpapers/\(yearFolder)/\(month)/\(fileName)"
-        } else {
-            return "Wallpapers/\(month)/\(fileName)"
-        }
+        // 文件直接在 app 根目录，不在子文件夹中
+        return fileName
     }
 
     /// Bundle 内的完整路径
     var bundleFullPath: String? {
         guard let resourcePath = Bundle.main.resourcePath else { return nil }
-        return "\(resourcePath)/\(bundleRelativePath)"
+        return "\(resourcePath)/\(fileName)"
     }
 
     /// 检查图片是否已打包在 Bundle 中
@@ -86,13 +81,7 @@ struct Wallpaper: Identifiable, Equatable, Hashable {
 
     /// 兼容旧代码的 bundlePath（不含扩展名）
     var bundlePath: String {
-        let nameWithoutExt = fileName.replacingOccurrences(of: ".png", with: "")
-        if year == 2025 {
-            let yearFolder = year % 100  // 25
-            return "Wallpapers/\(yearFolder)/\(month)/\(nameWithoutExt)"
-        } else {
-            return "Wallpapers/\(month)/\(nameWithoutExt)"
-        }
+        return fileName.replacingOccurrences(of: ".png", with: "")
     }
 
     /// 远程 URL

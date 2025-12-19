@@ -21,7 +21,7 @@ struct ShortcutsGuideView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(spacing: 16) {
                     // 顶部重要提示
                     importantTip
 
@@ -35,7 +35,7 @@ struct ShortcutsGuideView: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                    .padding(.top, 8)
+                    .padding(.horizontal)
 
                     // 内容区域
                     if selectedSection == .setup {
@@ -44,8 +44,9 @@ struct ShortcutsGuideView: View {
                         faqSection
                     }
                 }
-                .padding()
+                .padding(.vertical)
             }
+            .background(Color(UIColor.systemGroupedBackground))
             .navigationTitle("自动换壁纸")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -62,22 +63,52 @@ struct ShortcutsGuideView: View {
     // MARK: - 重要提示
 
     private var importantTip: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
+            // 设备信息
             HStack(spacing: 6) {
-                Image(systemName: "lightbulb.fill")
-                    .foregroundColor(.yellow)
-                Text("核心原理")
-                    .fontWeight(.bold)
+                Image(systemName: "iphone")
+                    .foregroundColor(.blue)
+                Text("你的设备")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(DeviceInfo.summary)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
-            Text("使用 iOS「快捷指令」的自动化功能，让手机在指定时间或条件下自动更换壁纸。")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            Divider()
+
+            // 模拟器警告
+            if DeviceInfo.isSimulator {
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.orange)
+                    Text("模拟器限制")
+                        .fontWeight(.bold)
+                }
+
+                Text("你正在使用模拟器，「设定墙纸」功能在模拟器上不生效。请在真机上测试完整功能。")
+                    .font(.subheadline)
+                    .foregroundColor(.orange)
+            } else {
+                HStack(spacing: 6) {
+                    Image(systemName: "lightbulb.fill")
+                        .foregroundColor(.yellow)
+                    Text("核心原理")
+                        .fontWeight(.bold)
+                }
+
+                Text("使用 iOS「快捷指令」的自动化功能，让手机在指定时间或条件下自动更换壁纸。")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.blue.opacity(0.1))
+        .background(DeviceInfo.isSimulator ? Color.orange.opacity(0.1) : Color.blue.opacity(0.1))
         .cornerRadius(12)
+        .padding(.horizontal)
     }
 
     // MARK: - 偏好设置
@@ -86,6 +117,7 @@ struct ShortcutsGuideView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("壁纸偏好")
                 .font(.headline)
+                .padding(.horizontal)
 
             // 日期范围
             VStack(alignment: .leading, spacing: 8) {
@@ -102,6 +134,7 @@ struct ShortcutsGuideView: View {
             .padding()
             .background(Color(UIColor.secondarySystemBackground))
             .cornerRadius(10)
+            .padding(.horizontal)
 
             // 语言和方向
             HStack(spacing: 12) {
@@ -139,6 +172,7 @@ struct ShortcutsGuideView: View {
                 .background(Color(UIColor.secondarySystemBackground))
                 .cornerRadius(10)
             }
+            .padding(.horizontal)
         }
     }
 
@@ -189,9 +223,10 @@ struct ShortcutsGuideView: View {
                 .cornerRadius(10)
             }
         }
+        .padding(.horizontal)
     }
 
-    // 步骤2：新建自动化（含触发方式说明）
+    // 步骤2：新建自动化（含触发方式说明，根据iOS版本显示不同操作路径）
     private var step2WithTriggerOptions: some View {
         VStack(alignment: .leading, spacing: 12) {
             // 步骤标题
@@ -207,7 +242,7 @@ struct ShortcutsGuideView: View {
                     Text("新建自动化")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    Text("底部点「自动化」→ 右上角「+」→ 选择触发条件：")
+                    Text(step2Instructions)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -266,8 +301,8 @@ struct ShortcutsGuideView: View {
             }
             .padding(.leading, 40)
 
-            // 选择后的操作
-            Text("选好触发条件后，点击「新建空白自动化」")
+            // 选择后的操作（根据iOS版本显示不同文案）
+            Text(step2AfterSelectText)
                 .font(.caption)
                 .foregroundColor(.blue)
                 .padding(.leading, 40)
@@ -275,6 +310,31 @@ struct ShortcutsGuideView: View {
         .padding()
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(10)
+    }
+
+    /// 步骤2的操作说明（根据iOS版本不同）
+    private var step2Instructions: String {
+        if DeviceInfo.isiOS18OrLater {
+            // iOS 18+
+            return "底部点「自动化」→ 右上角「+」→ 选择触发条件："
+        } else if DeviceInfo.isiOS17 {
+            // iOS 17
+            return "底部点「自动化」→「新建自动化」→ 选择触发条件："
+        } else {
+            // iOS 16
+            return "底部点「自动化」→「创建个人自动化」→ 选择触发条件："
+        }
+    }
+
+    /// 步骤2选择触发条件后的操作说明
+    private var step2AfterSelectText: String {
+        if DeviceInfo.isiOS18OrLater {
+            return "选好触发条件后，点击「新建空白自动化」"
+        } else if DeviceInfo.isiOS17 {
+            return "选好触发条件后，直接进入动作编辑页面"
+        } else {
+            return "选好触发条件后，点击「下一步」"
+        }
     }
 
     // 步骤4：设定墙纸（详细说明）
@@ -364,9 +424,18 @@ struct ShortcutsGuideView: View {
 
     private var faqSection: some View {
         VStack(alignment: .leading, spacing: 12) {
+            // 模拟器特别提示
+            if DeviceInfo.isSimulator {
+                faqItem(
+                    question: "为什么壁纸没有换？",
+                    answer: "你正在使用模拟器。iOS 模拟器不支持「设定墙纸」功能，请在真机上测试。",
+                    isHighlighted: true
+                )
+            }
+
             faqItem(
                 question: "设置了定时，但壁纸没换？",
-                answer: "检查自动化是否设为「立即运行」而不是「运行前询问」。"
+                answer: faqTimingNotWorkAnswer
             )
 
             faqItem(
@@ -374,14 +443,18 @@ struct ShortcutsGuideView: View {
                 answer: "「打开App」触发只在你打开那个App时才生效。如果想不打开任何App就自动换，请使用「定时触发」。"
             )
 
-            faqItem(
-                question: "运行时弹出错误提示？",
-                answer: "这是 iOS 18 的已知问题，壁纸其实已经换好了。\n\n关闭错误提示：设置 → 屏幕使用时间 → 查看所有活动 → 滑到底部「通知」→ 快捷指令 → 关闭"
-            )
+            // iOS 18 特有问题
+            if DeviceInfo.isiOS18OrLater {
+                faqItem(
+                    question: "运行时弹出错误提示？",
+                    answer: "这是 iOS 18 的已知问题，壁纸其实已经换好了。\n\n关闭错误提示：设置 → 屏幕使用时间 → 查看所有活动 → 滑到底部「通知」→ 快捷指令 → 关闭",
+                    isHighlighted: true
+                )
+            }
 
             faqItem(
                 question: "主屏幕壁纸变模糊了？",
-                answer: "设置 → 墙纸 → 点击主屏幕预览 → 关闭「模糊」"
+                answer: faqBlurryAnswer
             )
 
             faqItem(
@@ -399,9 +472,28 @@ struct ShortcutsGuideView: View {
                 answer: "当前版本已内置 \(AppInfo.totalBundledWallpapers) 张壁纸（到2月底），完全可以离线使用。3月以后的壁纸需要更新App版本获取。"
             )
         }
+        .padding(.horizontal)
     }
 
-    private func faqItem(question: String, answer: String) -> some View {
+    /// 定时不生效的答案（根据iOS版本）
+    private var faqTimingNotWorkAnswer: String {
+        if DeviceInfo.isiOS18OrLater {
+            return "检查以下设置：\n1. 自动化设为「立即运行」而不是「运行前询问」\n2. iOS 18 用户：确保已关闭「运行时通知」"
+        } else {
+            return "检查自动化是否设为「立即运行」而不是「运行前询问」。"
+        }
+    }
+
+    /// 壁纸模糊的答案（根据iOS版本）
+    private var faqBlurryAnswer: String {
+        if DeviceInfo.isiOS18OrLater {
+            return "设置 → 墙纸 → 点击主屏幕预览 → 关闭「模糊」\n\niOS 18 用户也可以长按主屏幕 → 点击右下角「自定」→ 关闭模糊效果"
+        } else {
+            return "设置 → 墙纸 → 点击主屏幕预览 → 关闭「模糊」"
+        }
+    }
+
+    private func faqItem(question: String, answer: String, isHighlighted: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .top, spacing: 8) {
                 Text("Q")
@@ -409,23 +501,28 @@ struct ShortcutsGuideView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.white)
                     .frame(width: 20, height: 20)
-                    .background(Color.orange)
+                    .background(isHighlighted ? Color.red : Color.orange)
                     .cornerRadius(4)
 
                 Text(question)
                     .font(.subheadline)
                     .fontWeight(.medium)
+                    .foregroundColor(isHighlighted ? .red : .primary)
             }
 
             Text(answer)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(isHighlighted ? .red.opacity(0.8) : .secondary)
                 .padding(.leading, 28)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(UIColor.secondarySystemBackground))
+        .background(isHighlighted ? Color.red.opacity(0.1) : Color(UIColor.secondarySystemBackground))
         .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(isHighlighted ? Color.red.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
     }
 
     // MARK: - 方法
