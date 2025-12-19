@@ -2,7 +2,7 @@
 
 > 此文档记录项目的核心信息、开发进度和重要决策。每次重大改动都会同步更新。
 >
-> 最后更新：2025-12-17
+> 最后更新：2025-12-19
 
 ---
 
@@ -362,30 +362,38 @@ find Seth365/Resources/Wallpapers -name "*.png" | wc -l
 
 ---
 
-## 十二、从 GitHub 获取代码
+## 十二、从 GitHub 获取代码（同事使用指南）
 
-### 12.1 克隆仓库
+**GitHub 仓库地址**：https://github.com/dufutaoraul/Seth365-ios
+
+### 12.1 方式一：下载 ZIP（推荐新手）
+
+1. 打开浏览器访问：https://github.com/dufutaoraul/Seth365-ios
+2. 点击绿色按钮 **「Code」** → **「Download ZIP」**
+3. 下载完成后解压 ZIP 文件
+4. 用 Xcode 打开 `Seth365.xcodeproj`
+5. 直接编译运行即可（所有壁纸图片都已包含）
+
+### 12.2 方式二：Git 克隆
 
 ```bash
 git clone https://github.com/dufutaoraul/Seth365-ios.git
 cd Seth365-ios
+open Seth365.xcodeproj
 ```
 
-### 12.2 添加壁纸文件
+### 12.3 壁纸说明
 
-**重要**：壁纸图片（约 868MB）未包含在 Git 仓库中，需要单独获取。
+✅ **所有壁纸图片（560张，868MB）已包含在仓库中**，无需单独下载。
 
-1. 从其他来源获取壁纸压缩包（如百度网盘、iCloud 等）
-2. 解压到 `Seth365/Resources/Wallpapers/` 目录
-3. 目录结构应该是：
-   ```
-   Seth365/Resources/Wallpapers/
-   ├── 25/12/           # 2025年12月壁纸
-   ├── 1/               # 2026年1月壁纸
-   ├── 2/               # 2026年2月壁纸
-   └── 3-12/            # 其他月份
-   ```
-4. 在 Xcode 中打开项目，确保 Wallpapers 文件夹显示为蓝色（文件夹引用）
+目录结构：
+```
+Seth365/Resources/Wallpapers/
+├── 1/               # 2026年1月壁纸（248张）
+└── 2/               # 2026年2月壁纸（224张 + 88张12月测试数据）
+```
+
+在 Xcode 中 Wallpapers 文件夹应显示为**蓝色图标**（文件夹引用）。
 
 ---
 
