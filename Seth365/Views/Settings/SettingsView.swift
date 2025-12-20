@@ -33,9 +33,9 @@ struct SettingsView: View {
                     // 显示模式
                     displayModePicker
                 } header: {
-                    Text("壁纸偏好")
+                    Text("settings.preferences".localized)
                 } footer: {
-                    Text("选择「全部」可同时显示中英文或横竖版壁纸")
+                    Text("settings.preferences.hint".localized)
                 }
 
                 // MARK: - 我的二维码
@@ -44,19 +44,19 @@ struct SettingsView: View {
 
                     // 选择/更换按钮
                     Button(action: { showQRCodePicker = true }) {
-                        Label(userQRCode != nil ? "更换二维码" : "选择二维码图片", systemImage: "photo.on.rectangle")
+                        Label(userQRCode != nil ? "settings.qr.change".localized : "settings.qr.select".localized, systemImage: "photo.on.rectangle")
                     }
 
                     // 删除按钮
                     if userQRCode != nil {
                         Button(role: .destructive, action: { showDeleteQRCodeAlert = true }) {
-                            Label("删除二维码", systemImage: "trash")
+                            Label("settings.qr.delete".localized, systemImage: "trash")
                         }
                     }
                 } header: {
-                    Text("我的二维码")
+                    Text("settings.my_qr".localized)
                 } footer: {
-                    Text("用于生成带二维码的海报分享")
+                    Text("settings.qr.hint".localized)
                 }
 
                 // MARK: - 自动换壁纸
@@ -65,7 +65,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "wand.and.stars")
                                 .foregroundColor(.blue)
-                            Text("设置自动换壁纸")
+                            Text("settings.auto.shortcuts".localized)
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.secondary)
@@ -74,16 +74,16 @@ struct SettingsView: View {
                     }
                     .foregroundColor(.primary)
                 } header: {
-                    Text("快捷指令")
+                    Text("settings.shortcuts".localized)
                 } footer: {
-                    Text("通过 iOS 快捷指令实现每天自动更换壁纸")
+                    Text("settings.shortcuts.hint".localized)
                 }
 
                 // MARK: - 版本更新
                 Section {
                     // 当前版本
                     HStack {
-                        Text("当前版本")
+                        Text("settings.version.current".localized)
                         Spacer()
                         Text(AppInfo.version)
                             .foregroundColor(.secondary)
@@ -92,7 +92,7 @@ struct SettingsView: View {
                     // 最新版本（如果有）
                     if let latestVersion = updateService.latestVersion {
                         HStack {
-                            Text("最新版本")
+                            Text("settings.version.latest".localized)
                             Spacer()
                             HStack(spacing: 4) {
                                 Text(latestVersion)
@@ -115,10 +115,10 @@ struct SettingsView: View {
                             if updateService.isChecking {
                                 ProgressView()
                                     .scaleEffect(0.8)
-                                Text("正在检查...")
+                                Text("settings.version.checking".localized)
                             } else {
                                 Image(systemName: "arrow.triangle.2.circlepath")
-                                Text("检查更新")
+                                Text("settings.version.check".localized)
                             }
                             Spacer()
                             if let lastCheck = updateService.lastCheckTime {
@@ -138,7 +138,7 @@ struct SettingsView: View {
                             HStack {
                                 Image(systemName: "arrow.down.app.fill")
                                     .foregroundColor(.white)
-                                Text("前往 App Store 更新")
+                                Text("settings.version.go_update".localized)
                                     .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
@@ -157,39 +157,39 @@ struct SettingsView: View {
                             .foregroundColor(.orange)
                     }
                 } header: {
-                    Text("版本更新")
+                    Text("settings.version".localized)
                 } footer: {
                     if updateService.hasUpdate {
-                        Text("发现新版本，建议更新以获得最佳体验")
+                        Text("settings.version.update_available".localized)
                     } else if updateService.latestVersion != nil {
-                        Text("当前已是最新版本")
+                        Text("settings.version.up_to_date".localized)
                     }
                 }
 
                 // MARK: - 关于
                 Section {
                     HStack {
-                        Text("壁纸周期")
+                        Text("settings.about.period".localized)
                         Spacer()
                         Text("2025.12.21 - 2026.12.31")
                             .foregroundColor(.secondary)
                     }
 
                     HStack {
-                        Text("每日壁纸数")
+                        Text("settings.about.daily_count".localized)
                         Spacer()
-                        Text("8张")
+                        Text("settings.about.daily_count_value".localized)
                             .foregroundColor(.secondary)
                     }
 
                     HStack {
-                        Text("内置壁纸")
+                        Text("settings.about.bundled".localized)
                         Spacer()
-                        Text("\(AppInfo.totalBundledWallpapers)张")
+                        Text(String(format: "settings.about.bundled_value".localized, AppInfo.totalBundledWallpapers))
                             .foregroundColor(.secondary)
                     }
                 } header: {
-                    Text("关于")
+                    Text("settings.about".localized)
                 }
 
                 // MARK: - 调试
@@ -198,22 +198,22 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "doc.text.magnifyingglass")
                                 .foregroundColor(.orange)
-                            Text("运行日志")
+                            Text("settings.debug.logs".localized)
                             Spacer()
                             if DebugLogService.shared.recentErrors().count > 0 {
-                                Text("\(DebugLogService.shared.recentErrors().count) 个错误")
+                                Text(String(format: "settings.debug.errors".localized, DebugLogService.shared.recentErrors().count))
                                     .font(.caption)
                                     .foregroundColor(.red)
                             }
                         }
                     }
                 } header: {
-                    Text("调试")
+                    Text("settings.debug".localized)
                 } footer: {
-                    Text("查看 App 运行日志，用于排查自动化等问题")
+                    Text("settings.debug.hint".localized)
                 }
             }
-            .navigationTitle("设置")
+            .navigationTitle("settings.title".localized)
             .sheet(isPresented: $showShortcutsGuide) {
                 ShortcutsGuideView()
             }
@@ -231,14 +231,14 @@ struct SettingsView: View {
                     }
                 }
             }
-            .alert("删除二维码", isPresented: $showDeleteQRCodeAlert) {
-                Button("取消", role: .cancel) { }
-                Button("删除", role: .destructive) {
+            .alert("settings.qr.delete.title".localized, isPresented: $showDeleteQRCodeAlert) {
+                Button("common.cancel".localized, role: .cancel) { }
+                Button("common.delete".localized, role: .destructive) {
                     QRCodeStorage.shared.deleteUserQRCode()
                     userQRCode = nil
                 }
             } message: {
-                Text("确定要删除已保存的二维码吗？")
+                Text("settings.qr.delete.message".localized)
             }
         }
     }
@@ -246,20 +246,20 @@ struct SettingsView: View {
     // MARK: - 语言选择器
 
     private var languagePicker: some View {
-        Picker("语言", selection: $userDefaults.preferredLanguage) {
-            Text("全部").tag(nil as WallpaperLanguage?)
-            Text("中文").tag(WallpaperLanguage.chinese as WallpaperLanguage?)
-            Text("English").tag(WallpaperLanguage.english as WallpaperLanguage?)
+        Picker("settings.language".localized, selection: $userDefaults.preferredLanguage) {
+            Text("common.all".localized).tag(nil as WallpaperLanguage?)
+            Text("language.chinese".localized).tag(WallpaperLanguage.chinese as WallpaperLanguage?)
+            Text("language.english".localized).tag(WallpaperLanguage.english as WallpaperLanguage?)
         }
     }
 
     // MARK: - 方向选择器
 
     private var orientationPicker: some View {
-        Picker("方向", selection: $userDefaults.preferredOrientation) {
-            Text("全部").tag(nil as WallpaperOrientation?)
-            Text("竖版").tag(WallpaperOrientation.portrait as WallpaperOrientation?)
-            Text("横版").tag(WallpaperOrientation.landscape as WallpaperOrientation?)
+        Picker("settings.orientation".localized, selection: $userDefaults.preferredOrientation) {
+            Text("common.all".localized).tag(nil as WallpaperOrientation?)
+            Text("orientation.portrait".localized).tag(WallpaperOrientation.portrait as WallpaperOrientation?)
+            Text("orientation.landscape".localized).tag(WallpaperOrientation.landscape as WallpaperOrientation?)
         }
     }
 
@@ -278,7 +278,7 @@ struct SettingsView: View {
     private func formatLastCheckTime(_ date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.locale = Locale.current
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
@@ -305,7 +305,7 @@ struct SettingsView: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(userQRCode != nil ? "已设置" : "未设置")
+                Text(userQRCode != nil ? "settings.qr.set".localized : "settings.qr.not_set".localized)
                     .font(.subheadline)
                     .fontWeight(.medium)
             }

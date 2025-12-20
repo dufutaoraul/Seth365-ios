@@ -11,6 +11,9 @@
 "done" = "完成";
 "settings" = "设置";
 "ok" = "好的";
+"common.cancel" = "取消";
+"common.delete" = "删除";
+"common.all" = "全部";
 
 // MARK: - 主标签栏
 "tab.calendar" = "日历";
@@ -67,15 +70,18 @@
 "settings.qr.delete.message" = "确定要删除已保存的二维码吗？";
 
 "settings.preferences" = "壁纸偏好";
-"settings.language" = "壁纸语言";
-"settings.orientation" = "壁纸方向";
+"settings.preferences.hint" = "选择「全部」可同时显示中英文或横竖版壁纸";
+"settings.language" = "语言";
+"settings.orientation" = "方向";
 
 "settings.switch" = "壁纸切换设置";
 "settings.switch.range" = "切换范围";
 "settings.switch.random" = "随机选择序号";
 
 "settings.auto" = "自动换壁纸";
-"settings.auto.shortcuts" = "配置快捷指令";
+"settings.auto.shortcuts" = "设置自动换壁纸";
+"settings.shortcuts" = "快捷指令";
+"settings.shortcuts.hint" = "通过 iOS 快捷指令实现每天自动更换壁纸";
 
 "settings.storage" = "存储";
 "settings.cache.size" = "缓存大小";
@@ -85,9 +91,28 @@
 "settings.cache.calculating" = "计算中...";
 
 "settings.about" = "关于";
-"settings.version" = "版本";
+"settings.about.period" = "壁纸周期";
+"settings.about.daily_count" = "每日壁纸数";
+"settings.about.daily_count_value" = "8张";
+"settings.about.bundled" = "内置壁纸";
+"settings.about.bundled_value" = "%d张";
+
+"settings.version" = "版本更新";
+"settings.version.current" = "当前版本";
+"settings.version.latest" = "最新版本";
+"settings.version.checking" = "正在检查...";
+"settings.version.check" = "检查更新";
+"settings.version.go_update" = "前往 App Store 更新";
+"settings.version.update_available" = "发现新版本，建议更新以获得最佳体验";
+"settings.version.up_to_date" = "当前已是最新版本";
+
 "settings.year" = "适用年份";
 "settings.daily_count" = "每日壁纸数量";
+
+"settings.debug" = "调试";
+"settings.debug.logs" = "运行日志";
+"settings.debug.errors" = "%d 个错误";
+"settings.debug.hint" = "查看 App 运行日志，用于排查自动化等问题";
 
 // MARK: - 快捷指令指南
 "shortcuts.title" = "自动换壁纸";

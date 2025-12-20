@@ -11,6 +11,9 @@
 "done" = "Done";
 "settings" = "Settings";
 "ok" = "OK";
+"common.cancel" = "Cancel";
+"common.delete" = "Delete";
+"common.all" = "All";
 
 // MARK: - Main Tab Bar
 "tab.calendar" = "Calendar";
@@ -67,15 +70,18 @@
 "settings.qr.delete.message" = "Are you sure you want to delete the saved QR code?";
 
 "settings.preferences" = "Wallpaper Preferences";
-"settings.language" = "Wallpaper Language";
-"settings.orientation" = "Wallpaper Orientation";
+"settings.preferences.hint" = "Select \"All\" to show both Chinese/English or Portrait/Landscape wallpapers";
+"settings.language" = "Language";
+"settings.orientation" = "Orientation";
 
 "settings.switch" = "Wallpaper Switch Settings";
 "settings.switch.range" = "Switch Range";
 "settings.switch.random" = "Random Index";
 
 "settings.auto" = "Auto Change Wallpaper";
-"settings.auto.shortcuts" = "Configure Shortcuts";
+"settings.auto.shortcuts" = "Setup Auto Wallpaper";
+"settings.shortcuts" = "Shortcuts";
+"settings.shortcuts.hint" = "Use iOS Shortcuts to automatically change wallpaper daily";
 
 "settings.storage" = "Storage";
 "settings.cache.size" = "Cache Size";
@@ -85,9 +91,28 @@
 "settings.cache.calculating" = "Calculating...";
 
 "settings.about" = "About";
+"settings.about.period" = "Wallpaper Period";
+"settings.about.daily_count" = "Daily Wallpapers";
+"settings.about.daily_count_value" = "8";
+"settings.about.bundled" = "Bundled Wallpapers";
+"settings.about.bundled_value" = "%d";
+
 "settings.version" = "Version";
+"settings.version.current" = "Current Version";
+"settings.version.latest" = "Latest Version";
+"settings.version.checking" = "Checking...";
+"settings.version.check" = "Check for Updates";
+"settings.version.go_update" = "Update on App Store";
+"settings.version.update_available" = "New version available, update recommended";
+"settings.version.up_to_date" = "You're up to date";
+
 "settings.year" = "Valid Year";
 "settings.daily_count" = "Daily Wallpapers";
+
+"settings.debug" = "Debug";
+"settings.debug.logs" = "Logs";
+"settings.debug.errors" = "%d errors";
+"settings.debug.hint" = "View app logs for troubleshooting automation issues";
 
 // MARK: - Shortcuts Guide
 "shortcuts.title" = "Auto Wallpaper";
