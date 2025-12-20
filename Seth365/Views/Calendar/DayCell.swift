@@ -15,20 +15,10 @@ struct DayCell: View {
     var body: some View {
         Button(action: onTap) {
             ZStack {
-                // 调试：如果是今天，打印状态
-                let _ = {
-                    if item.isToday {
-                        print("📅 DayCell渲染今天: day=\(item.dayNumber ?? 0) isToday=\(item.isToday) isUnlocked=\(item.isUnlocked)")
-                    }
-                }()
-
                 // 背景
-                if item.isToday {
+                if item.isToday && item.cellState == .unlocked {
                     Circle()
                         .fill(Constants.Colors.today)
-                } else if item.isUnlocked && item.date != nil {
-                    Circle()
-                        .fill(Color.clear)
                 }
 
                 // 内容
@@ -36,13 +26,15 @@ struct DayCell: View {
                     // 空白占位
                     Color.clear
                 } else if let dayNumber = item.dayNumber {
-                    if item.isUnlocked {
+                    switch item.cellState {
+                    case .unlocked:
                         // 已解锁：显示日期数字
                         Text("\(dayNumber)")
                             .font(.system(size: 16, weight: item.isToday ? .bold : .regular))
                             .foregroundColor(item.isToday ? .white : .primary)
-                    } else {
-                        // 未解锁：显示锁图标
+
+                    case .locked:
+                        // 未来日期：显示锁图标
                         VStack(spacing: 2) {
                             Image(systemName: "lock.fill")
                                 .font(.system(size: 10))
@@ -50,12 +42,22 @@ struct DayCell: View {
                                 .font(.system(size: 12))
                         }
                         .foregroundColor(Constants.Colors.locked)
+
+                    case .test:
+                        // 测试日期：显示禁止图标
+                        VStack(spacing: 2) {
+                            Image(systemName: "nosign")
+                                .font(.system(size: 10))
+                            Text("\(dayNumber)")
+                                .font(.system(size: 12))
+                        }
+                        .foregroundColor(.gray.opacity(0.5))
                     }
                 }
             }
             .frame(width: Constants.UI.calendarDaySize, height: Constants.UI.calendarDaySize)
         }
-        .disabled(item.isPlaceholder)
+        .disabled(item.isPlaceholder || item.cellState == .test)
     }
 }
 

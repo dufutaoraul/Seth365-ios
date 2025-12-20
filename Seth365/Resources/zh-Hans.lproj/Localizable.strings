@@ -204,3 +204,12 @@
 // MARK: - 下载进度
 "download.progress" = "已下载";
 "download.warning" = "请勿关闭App";
+
+// MARK: - 日历导航提示
+"calendar.nav.past" = "过去的就让它过去吧，精彩从现在开始～";
+"calendar.nav.future" = "未来的壁纸还在路上，耐心等待惊喜吧～";
+"calendar.locked.hint" = "惊喜需要等待，%d月%d日的壁纸将在当天解锁～";
+"calendar.alert.locked" = "还未解锁";
+"calendar.alert.hint" = "温馨提示";
+"calendar.alert.ok" = "好的，我等待";
+"calendar.alert.gotit" = "知道了";

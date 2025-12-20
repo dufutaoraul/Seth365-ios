@@ -44,10 +44,15 @@ struct CalendarView: View {
                     WallpaperListView(date: selectedDate)
                 }
             }
-            .alert("还未解锁", isPresented: $viewModel.showLockedAlert) {
-                Button("好的，我等待") { }
+            .alert("calendar.alert.locked".localized, isPresented: $viewModel.showLockedAlert) {
+                Button("calendar.alert.ok".localized) { }
             } message: {
                 Text(viewModel.lockedAlertMessage)
+            }
+            .alert("calendar.alert.hint".localized, isPresented: $viewModel.showNavigationAlert) {
+                Button("calendar.alert.gotit".localized) { }
+            } message: {
+                Text(viewModel.navigationAlertMessage)
             }
         }
     }

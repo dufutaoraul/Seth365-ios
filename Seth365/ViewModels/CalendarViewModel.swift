@@ -29,6 +29,12 @@ class CalendarViewModel: ObservableObject {
     /// 锁定提示信息
     @Published var lockedAlertMessage: String = ""
 
+    /// 是否显示导航提示
+    @Published var showNavigationAlert: Bool = false
+
+    /// 导航提示信息
+    @Published var navigationAlertMessage: String = ""
+
     init() {
         loadMonths()
         scrollToCurrentMonth()
@@ -72,47 +78,30 @@ class CalendarViewModel: ObservableObject {
     /// 选择日期
     /// - Parameter date: 要选择的日期
     func selectDate(_ date: Date) {
-        let components = DateUtils.calendar.dateComponents([.year, .month, .day], from: date)
-        let isUnlocked = DateUtils.isUnlocked(date)
-        print("🖱️ 点击日期: \(components.year!)/\(components.month!)/\(components.day!) isUnlocked=\(isUnlocked)")
+        let cellState = DateUtils.cellState(for: date)
 
-        // 检查是否已解锁
-        guard isUnlocked else {
-            // 显示温馨提示
-            print("🔒 显示锁定提示")
+        switch cellState {
+        case .test:
+            // 测试日期：无反应
+            break
+
+        case .unlocked:
+            // 已解锁：进入壁纸列表
+            selectedDate = date
+            showWallpaperList = true
+
+        case .locked:
+            // 未来日期：显示温馨提示
             showLockedDateAlert(for: date)
-            return
         }
-
-        print("✅ 进入壁纸列表")
-        selectedDate = date
-        showWallpaperList = true
     }
 
     /// 显示锁定日期的温馨提示
     private func showLockedDateAlert(for date: Date) {
-        let dateString = DateUtils.formatMonthDay(date)
-        let today = Date()
-        let calendar = DateUtils.calendar
+        let month = DateUtils.calendar.component(.month, from: date)
+        let day = DateUtils.calendar.component(.day, from: date)
 
-        // 计算还有多少天解锁
-        let startOfDate = calendar.startOfDay(for: date)
-        let startOfToday = calendar.startOfDay(for: today)
-
-        if let days = calendar.dateComponents([.day], from: startOfToday, to: startOfDate).day {
-            if days == 1 {
-                lockedAlertMessage = "明天就能解锁 \(dateString) 的壁纸啦～\n\n好饭不怕晚，精彩值得等待！"
-            } else if days <= 7 {
-                lockedAlertMessage = "还有 \(days) 天就能解锁 \(dateString) 的壁纸～\n\n耐心等待，惊喜即将到来！"
-            } else if days <= 30 {
-                lockedAlertMessage = "\(dateString) 的壁纸还在路上～\n\n再等 \(days) 天，美好如约而至！"
-            } else {
-                lockedAlertMessage = "\(dateString) 的壁纸正在为你准备中～\n\n时间会带来最好的礼物，敬请期待！"
-            }
-        } else {
-            lockedAlertMessage = "这一天的壁纸还未解锁～\n\n美好的事物值得等待！"
-        }
-
+        lockedAlertMessage = String(format: "calendar.locked.hint".localized, month, day)
         showLockedAlert = true
     }
 
@@ -156,26 +145,68 @@ class CalendarViewModel: ObservableObject {
 
     /// 切换到上一个月
     func previousMonth() {
-        if currentMonthIndex > 0 {
-            currentMonthIndex -= 1
+        guard currentMonthIndex > 0 else {
+            // 已经是第一个月（2025年12月）
+            navigationAlertMessage = "calendar.nav.past".localized
+            showNavigationAlert = true
+            return
         }
+
+        let targetMonth = months[currentMonthIndex - 1]
+        let targetComp = DateUtils.calendar.dateComponents([.year, .month], from: targetMonth)
+
+        // 检查是否早于2025年12月
+        if targetComp.year! < 2025 || (targetComp.year == 2025 && targetComp.month! < 12) {
+            navigationAlertMessage = "calendar.nav.past".localized
+            showNavigationAlert = true
+            return
+        }
+
+        currentMonthIndex -= 1
     }
 
     /// 切换到下一个月
     func nextMonth() {
-        if currentMonthIndex < months.count - 1 {
-            currentMonthIndex += 1
+        guard currentMonthIndex < months.count - 1 else {
+            // 已经是最后一个月
+            navigationAlertMessage = "calendar.nav.future".localized
+            showNavigationAlert = true
+            return
         }
+
+        let todayComp = DateUtils.calendar.dateComponents([.year, .month], from: Date())
+        let targetMonth = months[currentMonthIndex + 1]
+        let targetComp = DateUtils.calendar.dateComponents([.year, .month], from: targetMonth)
+
+        // 检查是否晚于当前月份
+        if targetComp.year! > todayComp.year! ||
+           (targetComp.year == todayComp.year && targetComp.month! > todayComp.month!) {
+            navigationAlertMessage = "calendar.nav.future".localized
+            showNavigationAlert = true
+            return
+        }
+
+        currentMonthIndex += 1
     }
 
     /// 是否可以切换到上一个月
     var canGoPrevious: Bool {
-        currentMonthIndex > 0
+        guard currentMonthIndex > 0 else { return false }
+        let targetMonth = months[currentMonthIndex - 1]
+        let targetComp = DateUtils.calendar.dateComponents([.year, .month], from: targetMonth)
+        // 不能早于2025年12月
+        return !(targetComp.year! < 2025 || (targetComp.year == 2025 && targetComp.month! < 12))
     }
 
     /// 是否可以切换到下一个月
     var canGoNext: Bool {
-        currentMonthIndex < months.count - 1
+        guard currentMonthIndex < months.count - 1 else { return false }
+        let todayComp = DateUtils.calendar.dateComponents([.year, .month], from: Date())
+        let targetMonth = months[currentMonthIndex + 1]
+        let targetComp = DateUtils.calendar.dateComponents([.year, .month], from: targetMonth)
+        // 不能晚于当前月份
+        return !(targetComp.year! > todayComp.year! ||
+                (targetComp.year == todayComp.year && targetComp.month! > todayComp.month!))
     }
 }
 
@@ -185,9 +216,14 @@ struct DayItem: Identifiable {
     let date: Date?
     let isPlaceholder: Bool
 
+    /// 日期单元格状态
+    var cellState: DateCellState {
+        guard let date = date else { return .test }
+        return DateUtils.cellState(for: date)
+    }
+
     var isUnlocked: Bool {
-        guard let date = date else { return false }
-        return DateUtils.isUnlocked(date)
+        cellState == .unlocked
     }
 
     var isToday: Bool {

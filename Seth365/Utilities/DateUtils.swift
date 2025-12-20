@@ -7,6 +7,13 @@
 
 import Foundation
 
+/// 日期单元格状态
+enum DateCellState {
+    case test       // 测试日期 (12.1-20)：🚫，不可点击
+    case unlocked   // 已解锁 (12.21-今天)：可点击
+    case locked     // 未来日期：🔒，点击提示
+}
+
 /// 日期工具类
 enum DateUtils {
     /// 共享的日历实例
@@ -14,6 +21,15 @@ enum DateUtils {
         var calendar = Calendar.current
         calendar.timeZone = TimeZone.current
         return calendar
+    }()
+
+    /// 正式上线日期 (2025年12月21日)
+    static let launchDate: Date = {
+        var components = DateComponents()
+        components.year = 2025
+        components.month = 12
+        components.day = 21
+        return calendar.date(from: components) ?? Date()
     }()
 
     /// 2026 年的起始日期
@@ -33,6 +49,37 @@ enum DateUtils {
         components.day = 31
         return calendar.date(from: components) ?? Date()
     }()
+
+    /// 获取日期的单元格状态
+    /// - Parameter date: 要检查的日期
+    /// - Returns: 日期单元格状态
+    static func cellState(for date: Date) -> DateCellState {
+        let comp = calendar.dateComponents([.year, .month, .day], from: date)
+        let year = comp.year!
+        let month = comp.month!
+        let day = comp.day!
+        let today = calendar.startOfDay(for: Date())
+        let dateStart = calendar.startOfDay(for: date)
+
+        // 测试日期: 2025年12月1日-20日
+        if year == 2025 && month == 12 && day >= 1 && day <= 20 {
+            return .test
+        }
+
+        // 未来日期
+        if dateStart > today {
+            return .locked
+        }
+
+        // 已解锁: 从上线日期到今天
+        let launchDateStart = calendar.startOfDay(for: launchDate)
+        if dateStart >= launchDateStart && dateStart <= today {
+            return .unlocked
+        }
+
+        // 其他情况视为测试日期
+        return .test
+    }
 
     /// 获取所有可用月份（只返回有解锁日期的月份）
     static func getAllAvailableMonths() -> [Date] {

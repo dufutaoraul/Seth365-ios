@@ -204,3 +204,12 @@
 // MARK: - Download Progress
 "download.progress" = "Downloaded";
 "download.warning" = "Don't close the app";
+
+// MARK: - Calendar Navigation Hints
+"calendar.nav.past" = "The past is past, let's focus on the present!";
+"calendar.nav.future" = "Future wallpapers are on the way, stay tuned!";
+"calendar.locked.hint" = "Good things are worth waiting for! Wallpapers for %d/%d will unlock on that day.";
+"calendar.alert.locked" = "Not Yet Unlocked";
+"calendar.alert.hint" = "Notice";
+"calendar.alert.ok" = "I'll Wait";
+"calendar.alert.gotit" = "Got It";
