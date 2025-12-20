@@ -193,21 +193,26 @@ struct ShortcutsGuideView: View {
     // MARK: - 配置步骤
 
     private var setupStepsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // 步骤1
-            stepView(1, "打开「快捷指令」App", "在手机上找到并打开")
+        VStack(alignment: .leading, spacing: 20) {
+            // ========== 第一部分：创建快捷指令 ==========
+            partAHeader
 
-            // 步骤2：新建自动化（包含触发方式选择）
-            step2WithTriggerOptions
+            stepView("A1", "新建快捷指令", "打开「快捷指令」App → 点击右上角「+」")
 
-            // 步骤3
-            stepView(3, "添加获取壁纸动作", "搜索「Seth365」→ 点击「获取 Seth365 壁纸」")
+            stepView("A2", "添加获取壁纸动作", "底部搜索「Seth365」→ 点击「获取 Seth365 壁纸」")
 
-            // 步骤4
-            step4DetailView
+            stepViewSetWallpaper
 
-            // 步骤5
-            stepView(5, "完成设置", "点右上角「完成」→ 选择「立即运行」→ 关闭「运行前询问」")
+            stepView("A4", "保存快捷指令", "点击顶部名称改名（如「换壁纸」）→ 点「完成」")
+
+            // ========== 第二部分：创建自动化 ==========
+            partBHeader
+
+            automationTriggerOptions
+
+            stepView("B2", "选择快捷指令", "动作选「运行快捷指令」→ 选择刚才创建的「换壁纸」")
+
+            stepView("B3", "完成设置", "关闭「运行前询问」→ 点击「完成」")
 
             // 打开快捷指令按钮
             Button(action: openShortcutsApp) {
@@ -226,124 +231,55 @@ struct ShortcutsGuideView: View {
         .padding(.horizontal)
     }
 
-    // 步骤2：新建自动化（含触发方式说明，根据iOS版本显示不同操作路径）
-    private var step2WithTriggerOptions: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // 步骤标题
-            HStack(alignment: .top, spacing: 12) {
-                Text("2")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(width: 28, height: 28)
-                    .background(Color.blue)
-                    .clipShape(Circle())
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("新建自动化")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Text(step2Instructions)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            // 触发方式选项
-            VStack(spacing: 8) {
-                // 定时触发
-                HStack(spacing: 10) {
-                    Image(systemName: "clock.fill")
-                        .foregroundColor(.green)
-                        .frame(width: 24)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 6) {
-                            Text("特定时间")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                            Text("推荐")
-                                .font(.caption2)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 5)
-                                .padding(.vertical, 1)
-                                .background(Color.green)
-                                .cornerRadius(3)
-                        }
-                        Text("每天固定时间换壁纸，无需打开任何App")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.green.opacity(0.1))
-                .cornerRadius(8)
-
-                // 打开App触发
-                HStack(spacing: 10) {
-                    Image(systemName: "app.badge.fill")
-                        .foregroundColor(.orange)
-                        .frame(width: 24)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("打开App时")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        Text("打开微信/抖音等App时换壁纸")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.orange.opacity(0.1))
-                .cornerRadius(8)
-            }
-            .padding(.leading, 40)
-
-            // 选择后的操作（根据iOS版本显示不同文案）
-            Text(step2AfterSelectText)
+    // 第一部分标题
+    private var partAHeader: some View {
+        HStack(spacing: 8) {
+            Text("A")
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .frame(width: 28, height: 28)
+                .background(Color.purple)
+                .clipShape(Circle())
+            Text("创建快捷指令")
+                .font(.headline)
+                .fontWeight(.bold)
+            Spacer()
+            Text("只需创建一次")
                 .font(.caption)
-                .foregroundColor(.blue)
-                .padding(.leading, 40)
+                .foregroundColor(.secondary)
         }
-        .padding()
-        .background(Color(UIColor.secondarySystemBackground))
-        .cornerRadius(10)
+        .padding(.top, 8)
     }
 
-    /// 步骤2的操作说明（根据iOS版本不同）
-    private var step2Instructions: String {
-        if DeviceInfo.isiOS18OrLater {
-            // iOS 18+
-            return "底部点「自动化」→ 右上角「+」→ 选择触发条件："
-        } else if DeviceInfo.isiOS17 {
-            // iOS 17
-            return "底部点「自动化」→「新建自动化」→ 选择触发条件："
-        } else {
-            // iOS 16
-            return "底部点「自动化」→「创建个人自动化」→ 选择触发条件："
+    // 第二部分标题
+    private var partBHeader: some View {
+        HStack(spacing: 8) {
+            Text("B")
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+                .frame(width: 28, height: 28)
+                .background(Color.green)
+                .clipShape(Circle())
+            Text("创建自动化")
+                .font(.headline)
+                .fontWeight(.bold)
+            Spacer()
+            Text("设置触发条件")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
+        .padding(.top, 16)
     }
 
-    /// 步骤2选择触发条件后的操作说明
-    private var step2AfterSelectText: String {
-        if DeviceInfo.isiOS18OrLater {
-            return "选好触发条件后，点击「新建空白自动化」"
-        } else if DeviceInfo.isiOS17 {
-            return "选好触发条件后，直接进入动作编辑页面"
-        } else {
-            return "选好触发条件后，点击「下一步」"
-        }
-    }
-
-    // 步骤4：设定墙纸（详细说明）
-    private var step4DetailView: some View {
+    // A3: 设定墙纸（详细说明必须关闭的选项）
+    private var stepViewSetWallpaper: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // 步骤标题
             HStack(alignment: .top, spacing: 12) {
-                Text("4")
-                    .font(.headline)
+                Text("A3")
+                    .font(.caption)
+                    .fontWeight(.bold)
                     .foregroundColor(.white)
                     .frame(width: 28, height: 28)
                     .background(Color.blue)
@@ -353,41 +289,29 @@ struct ShortcutsGuideView: View {
                     Text("添加设定墙纸动作")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    Text("在底部搜索框继续搜索「墙纸」")
+                    Text("底部搜索「墙纸」→ 点击「设定墙纸」")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
 
-            // 详细说明
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 6) {
-                    Image(systemName: "hand.tap.fill")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                    Text("选择「设定墙纸」（不是「在墙纸间切换」）")
-                        .font(.caption)
-                }
+            // 必须关闭的选项
+            VStack(alignment: .leading, spacing: 8) {
+                Text("⚠️ 必须关闭以下选项：")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.red)
 
-                HStack(spacing: 6) {
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                    Text("点击展开，位置选「锁定屏幕和主屏幕」")
-                        .font(.caption)
-                }
-
-                HStack(spacing: 6) {
-                    Image(systemName: "eye.slash")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                    Text("关闭「显示预览」")
-                        .font(.caption)
+                VStack(alignment: .leading, spacing: 4) {
+                    settingRow("位置", "选择「锁定屏幕和主屏幕」", isToggle: false)
+                    settingRow("显示预览", "关闭", isToggle: true)
+                    settingRow("裁切到主体", "关闭", isToggle: true)
+                    settingRow("易读性模糊", "关闭", isToggle: true)
                 }
             }
             .padding(10)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.blue.opacity(0.1))
+            .background(Color.red.opacity(0.1))
             .cornerRadius(8)
             .padding(.leading, 40)
         }
@@ -396,10 +320,116 @@ struct ShortcutsGuideView: View {
         .cornerRadius(10)
     }
 
-    private func stepView(_ number: Int, _ title: String, _ detail: String) -> some View {
+    private func settingRow(_ name: String, _ value: String, isToggle: Bool) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: isToggle ? "toggle.power.off" : "checkmark.circle.fill")
+                .font(.caption)
+                .foregroundColor(isToggle ? .red : .green)
+            Text(name)
+                .font(.caption)
+            Spacer()
+            Text(value)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    // B1: 自动化触发方式选择
+    private var automationTriggerOptions: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                Text("B1")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .frame(width: 28, height: 28)
+                    .background(Color.blue)
+                    .clipShape(Circle())
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("新建自动化")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    Text(automationCreatePath)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            // 两种触发方式
+            VStack(spacing: 10) {
+                // 定时触发
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "clock.fill")
+                            .foregroundColor(.green)
+                        Text("方式一：定时触发")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text("推荐")
+                            .font(.caption2)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(Color.green)
+                            .cornerRadius(3)
+                    }
+                    Text("选择「特定时间」→ 设置每天几点换壁纸")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("💡 想一天换多次？需要创建多个自动化，每个设置不同时间")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.green.opacity(0.1))
+                .cornerRadius(8)
+
+                // 打开App触发
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "app.badge.fill")
+                            .foregroundColor(.orange)
+                        Text("方式二：打开App时触发")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
+                    Text("选择「App」→「打开」→ 选择App")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("💡 可多选！选择微信、抖音、微博等，打开任意一个都会换壁纸")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.orange.opacity(0.1))
+                .cornerRadius(8)
+            }
+            .padding(.leading, 40)
+        }
+        .padding()
+        .background(Color(UIColor.secondarySystemBackground))
+        .cornerRadius(10)
+    }
+
+    /// 创建自动化的路径（根据iOS版本不同）
+    private var automationCreatePath: String {
+        if DeviceInfo.isiOS18OrLater {
+            return "底部点「自动化」→ 右上角「+」"
+        } else if DeviceInfo.isiOS17 {
+            return "底部点「自动化」→「新建自动化」"
+        } else {
+            return "底部点「自动化」→「创建个人自动化」"
+        }
+    }
+
+    private func stepView(_ number: String, _ title: String, _ detail: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            Text("\(number)")
-                .font(.headline)
+            Text(number)
+                .font(.caption)
+                .fontWeight(.bold)
                 .foregroundColor(.white)
                 .frame(width: 28, height: 28)
                 .background(Color.blue)
