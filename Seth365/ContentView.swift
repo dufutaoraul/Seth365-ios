@@ -57,7 +57,7 @@ struct ContentView: View {
                     .environmentObject(preloadService)
             }
         }
-        .onChange(of: isReady) { _, newValue in
+        .onChange(of: isReady) { newValue in
             if newValue {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     showSplash = false
