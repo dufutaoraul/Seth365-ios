@@ -200,3 +200,7 @@
 "splash.loading" = "Preparing...";
 "splash.ready" = "Ready";
 "splash.subtitle" = "2026 Calendar Wallpapers";
+
+// MARK: - Download Progress
+"download.progress" = "Downloaded";
+"download.warning" = "Don't close the app";

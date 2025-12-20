@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var selectedTab = 0
     @State private var isReady = false
     @State private var showSplash = true
+    @StateObject private var preloadService = WallpaperPreloadService.shared
 
     var body: some View {
         ZStack {
@@ -49,11 +50,21 @@ struct ContentView: View {
                 SplashView(isReady: $isReady)
                     .transition(.opacity)
             }
+
+            // 可拖动的下载进度浮窗
+            if !showSplash && preloadService.isLoading {
+                DraggableDownloadIndicator()
+                    .environmentObject(preloadService)
+            }
         }
         .onChange(of: isReady) { _, newValue in
             if newValue {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     showSplash = false
+                }
+                // 启动后开始下载非内置壁纸
+                Task {
+                    await preloadService.preloadWallpapers()
                 }
             }
         }
@@ -135,6 +146,113 @@ struct SplashView: View {
 
             await MainActor.run {
                 isReady = true
+            }
+        }
+    }
+}
+
+/// 可拖动的下载进度浮窗
+struct DraggableDownloadIndicator: View {
+    @EnvironmentObject private var preloadService: WallpaperPreloadService
+    @State private var position: CGPoint = CGPoint(x: UIScreen.main.bounds.width - 80, y: 100)
+    @State private var isDragging = false
+    @State private var isExpanded = true
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(alignment: .trailing, spacing: 4) {
+                // 主体内容
+                HStack(spacing: 10) {
+                    if isExpanded {
+                        VStack(alignment: .leading, spacing: 4) {
+                            // 状态消息
+                            Text(preloadService.statusMessage)
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .lineLimit(2)
+                                .foregroundColor(.primary)
+
+                            // 下载进度
+                            HStack(spacing: 4) {
+                                Text("download.progress".localized)
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                                Text("\(preloadService.downloadedCount)/\(preloadService.totalCount)")
+                                    .font(.caption2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.blue)
+                            }
+
+                            // 警告提示
+                            HStack(spacing: 4) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .font(.system(size: 10))
+                                Text("download.warning".localized)
+                                    .font(.caption2)
+                            }
+                            .foregroundColor(.orange)
+                        }
+                        .frame(maxWidth: 150)
+                    }
+
+                    // 圆形进度
+                    ZStack {
+                        Circle()
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 4)
+                            .frame(width: 44, height: 44)
+
+                        Circle()
+                            .trim(from: 0, to: preloadService.progress)
+                            .stroke(Color.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                            .frame(width: 44, height: 44)
+                            .rotationEffect(.degrees(-90))
+                            .animation(.linear(duration: 0.3), value: preloadService.progress)
+
+                        Text("\(Int(preloadService.progress * 100))%")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.blue)
+                    }
+                }
+                .padding(.horizontal, isExpanded ? 14 : 10)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 22)
+                        .fill(Color(UIColor.systemBackground))
+                        .shadow(color: .black.opacity(0.25), radius: 12, x: 0, y: 6)
+                )
+                .scaleEffect(isDragging ? 1.05 : 1.0)
+                .animation(.spring(response: 0.3), value: isDragging)
+            }
+            .position(position)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        isDragging = true
+                        // 限制在屏幕范围内
+                        let newX = min(max(value.location.x, 60), geometry.size.width - 60)
+                        let newY = min(max(value.location.y, 80), geometry.size.height - 80)
+                        position = CGPoint(x: newX, y: newY)
+                    }
+                    .onEnded { _ in
+                        isDragging = false
+                        // 吸附到边缘
+                        withAnimation(.spring(response: 0.4)) {
+                            if position.x < geometry.size.width / 2 {
+                                position.x = 80
+                            } else {
+                                position.x = geometry.size.width - 80
+                            }
+                        }
+                    }
+            )
+            .onTapGesture {
+                withAnimation(.spring(response: 0.3)) {
+                    isExpanded.toggle()
+                }
+            }
+            .onAppear {
+                // 初始位置在右上角
+                position = CGPoint(x: geometry.size.width - 80, y: 120)
             }
         }
     }
