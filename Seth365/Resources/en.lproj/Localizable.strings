@@ -195,3 +195,8 @@
 // MARK: - About
 "about.year_value" = "2026";
 "about.daily_count_value" = "8";
+
+// MARK: - Splash Screen
+"splash.loading" = "Preparing...";
+"splash.ready" = "Ready";
+"splash.subtitle" = "2026 Calendar Wallpapers";

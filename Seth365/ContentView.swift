@@ -9,10 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedTab = 0
-    @EnvironmentObject private var preloadService: WallpaperPreloadService
+    @State private var isReady = false
+    @State private var showSplash = true
 
     var body: some View {
         ZStack {
+            // 主内容
             TabView(selection: $selectedTab) {
                 // 日历页面
                 CalendarView()
@@ -40,86 +42,99 @@ struct ContentView: View {
                     }
                     .tag(2)
             }
+            .opacity(showSplash ? 0 : 1)
 
-            // 悬浮下载进度指示器（右上角）
-            if preloadService.isLoading {
-                VStack {
-                    HStack {
-                        Spacer()
-                        DownloadProgressIndicator()
-                            .environmentObject(preloadService)
-                    }
-                    Spacer()
+            // 启动欢迎页
+            if showSplash {
+                SplashView(isReady: $isReady)
+                    .transition(.opacity)
+            }
+        }
+        .onChange(of: isReady) { _, newValue in
+            if newValue {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    showSplash = false
                 }
-                .padding(.top, 50)
-                .padding(.trailing, 16)
             }
         }
     }
 }
 
-/// 悬浮下载进度指示器
-struct DownloadProgressIndicator: View {
-    @EnvironmentObject private var preloadService: WallpaperPreloadService
-    @State private var isExpanded = true  // 默认展开
+/// 启动欢迎页
+struct SplashView: View {
+    @Binding var isReady: Bool
+    @State private var isAnimating = false
+    @State private var statusText = "splash.loading".localized
 
     var body: some View {
-        VStack(alignment: .trailing, spacing: 4) {
-            // 主体
-            HStack(spacing: 10) {
-                if isExpanded {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(preloadService.statusMessage)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .lineLimit(1)
+        ZStack {
+            // 背景渐变
+            LinearGradient(
+                colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
 
-                        HStack(spacing: 4) {
-                            Text("已下载")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                            Text("\(preloadService.downloadedCount)/\(preloadService.totalCount)")
-                                .font(.caption2)
-                                .fontWeight(.medium)
-                                .foregroundColor(.blue)
-                        }
+            VStack(spacing: 30) {
+                Spacer()
 
-                        HStack(spacing: 4) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.system(size: 9))
-                            Text("请勿关闭App")
-                                .font(.caption2)
-                        }
-                        .foregroundColor(.orange)
-                    }
+                // App 图标
+                Image(systemName: "calendar.badge.clock")
+                    .font(.system(size: 80))
+                    .foregroundColor(.white)
+                    .scaleEffect(isAnimating ? 1.1 : 1.0)
+                    .animation(
+                        .easeInOut(duration: 1.0).repeatForever(autoreverses: true),
+                        value: isAnimating
+                    )
+
+                // App 名称
+                Text("Seth365")
+                    .font(.system(size: 42, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+
+                // 副标题
+                Text("splash.subtitle".localized)
+                    .font(.title3)
+                    .foregroundColor(.white.opacity(0.9))
+
+                Spacer()
+
+                // 加载指示器
+                VStack(spacing: 12) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.2)
+
+                    Text(statusText)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.8))
                 }
-
-                ZStack {
-                    Circle()
-                        .stroke(Color.gray.opacity(0.3), lineWidth: 3)
-                        .frame(width: 40, height: 40)
-
-                    Circle()
-                        .trim(from: 0, to: preloadService.progress)
-                        .stroke(Color.blue, lineWidth: 3)
-                        .frame(width: 40, height: 40)
-                        .rotationEffect(.degrees(-90))
-                        .animation(.linear(duration: 0.3), value: preloadService.progress)
-
-                    Text("\(Int(preloadService.progress * 100))%")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.blue)
-                }
+                .padding(.bottom, 60)
             }
-            .padding(.horizontal, isExpanded ? 14 : 8)
-            .padding(.vertical, 10)
-            .background(Color(UIColor.systemBackground))
-            .cornerRadius(22)
-            .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 4)
         }
-        .onTapGesture {
-            withAnimation(.spring()) {
-                isExpanded.toggle()
+        .onAppear {
+            isAnimating = true
+            prepareApp()
+        }
+    }
+
+    private func prepareApp() {
+        // 模拟准备过程（实际上内置壁纸已经在 Bundle 中，无需加载）
+        Task {
+            // 短暂延迟让用户看到欢迎页
+            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5秒
+
+            await MainActor.run {
+                statusText = "splash.ready".localized
+            }
+
+            // 再等待一小段时间
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
+
+            await MainActor.run {
+                isReady = true
             }
         }
     }
@@ -127,5 +142,4 @@ struct DownloadProgressIndicator: View {
 
 #Preview {
     ContentView()
-        .environmentObject(WallpaperPreloadService.shared)
 }

@@ -11,7 +11,6 @@ import PhotosUI
 /// 设置页面
 struct SettingsView: View {
     @ObservedObject private var userDefaults = UserDefaultsManager.shared
-    @EnvironmentObject private var preloadService: WallpaperPreloadService
     @StateObject private var updateService = AppUpdateService.shared
     @State private var showShortcutsGuide = false
     @State private var showQRCodePicker = false
@@ -317,5 +316,4 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .environmentObject(WallpaperPreloadService.shared)
 }

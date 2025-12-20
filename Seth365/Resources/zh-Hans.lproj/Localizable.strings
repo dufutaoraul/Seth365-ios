@@ -195,3 +195,8 @@
 // MARK: - 关于
 "about.year_value" = "2026年";
 "about.daily_count_value" = "8张";
+
+// MARK: - 启动页
+"splash.loading" = "正在准备...";
+"splash.ready" = "准备就绪";
+"splash.subtitle" = "2026日历壁纸";
