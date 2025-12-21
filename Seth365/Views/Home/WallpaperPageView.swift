@@ -19,12 +19,12 @@ struct WallpaperPageView: View {
             ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
                 WallpaperImageView(wallpaper: wallpaper, onTap: onTap)
                     .tag(index)
-                    // 当显示模式改变时强制重新渲染
-                    .id("\(wallpaper.id)_\(userDefaults.displayMode.rawValue)")
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxHeight: .infinity)
+        // 当显示模式改变时强制整个 TabView 重新渲染
+        .id("wallpaper_page_\(userDefaults.displayMode.rawValue)")
     }
 }
 
@@ -34,7 +34,11 @@ struct WallpaperImageView: View {
     var onTap: (() -> Void)?
     @State private var image: UIImage?
     @State private var isLoading = true
-    @ObservedObject private var userDefaults = UserDefaultsManager.shared
+
+    // 直接读取显示模式，确保每次渲染时获取最新值
+    private var displayMode: WallpaperDisplayMode {
+        UserDefaultsManager.shared.displayMode
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -82,7 +86,7 @@ struct WallpaperImageView: View {
 
     /// 背景色
     private var backgroundColor: Color {
-        switch userDefaults.displayMode {
+        switch displayMode {
         case .fitBlack:
             return .black
         case .fitWhite:
@@ -95,7 +99,7 @@ struct WallpaperImageView: View {
     /// 根据显示模式渲染图片
     @ViewBuilder
     private func displayModeView(for image: UIImage, geometry: GeometryProxy, isLandscape: Bool) -> some View {
-        let displayMode = userDefaults.displayMode
+        let currentMode = displayMode
 
         switch displayMode {
         case .fitBlack, .fitWhite:
