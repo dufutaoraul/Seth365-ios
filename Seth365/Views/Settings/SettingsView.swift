@@ -265,10 +265,18 @@ struct SettingsView: View {
     // MARK: - 显示模式选择器
 
     private var displayModePicker: some View {
-        Picker("显示模式", selection: $userDefaults.displayMode) {
-            ForEach(WallpaperDisplayMode.allCases) { mode in
-                Text(mode.displayName).tag(mode)
+        VStack(alignment: .leading, spacing: 12) {
+            Picker("显示模式", selection: $userDefaults.displayMode) {
+                ForEach(WallpaperDisplayMode.allCases) { mode in
+                    Text(mode.displayName).tag(mode)
+                }
             }
+
+            // 显示模式预览
+            DisplayModePreviewView(displayMode: userDefaults.displayMode)
+                .frame(height: 200)
+                .cornerRadius(12)
+                .id("preview_\(userDefaults.displayMode.rawValue)")
         }
     }
 
@@ -310,6 +318,106 @@ struct SettingsView: View {
             }
 
             Spacer()
+        }
+    }
+}
+
+// MARK: - 显示模式预览视图
+
+struct DisplayModePreviewView: View {
+    let displayMode: WallpaperDisplayMode
+    @State private var previewImage: UIImage?
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // 背景色
+                backgroundColor
+                    .cornerRadius(12)
+
+                if let image = previewImage {
+                    previewContent(image: image, geometry: geometry)
+                } else {
+                    ProgressView()
+                }
+            }
+        }
+        .onAppear {
+            loadPreviewImage()
+        }
+    }
+
+    private var backgroundColor: Color {
+        switch displayMode {
+        case .fitBlack:
+            return .black
+        case .fitWhite:
+            return .white
+        default:
+            return .black
+        }
+    }
+
+    @ViewBuilder
+    private func previewContent(image: UIImage, geometry: GeometryProxy) -> some View {
+        switch displayMode {
+        case .fitBlack, .fitWhite:
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+        case .stretch:
+            Image(uiImage: image)
+                .resizable()
+                .frame(width: geometry.size.width, height: geometry.size.height)
+
+        case .cropCenter:
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
+
+        case .cropTop:
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
+                .clipped()
+
+        case .blurBackground:
+            ZStack {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+                    .blur(radius: 20)
+                    .scaleEffect(1.1)
+
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+    }
+
+    private func loadPreviewImage() {
+        // 加载今日第一张壁纸作为预览
+        let todayWallpapers = Wallpaper.allWallpapers(for: Date())
+        guard let firstWallpaper = todayWallpapers.first else { return }
+
+        Task {
+            do {
+                let image = try await ImageCacheService.shared.getOrDownloadImage(for: firstWallpaper)
+                await MainActor.run {
+                    self.previewImage = image
+                }
+            } catch {
+                // 忽略错误
+            }
         }
     }
 }
