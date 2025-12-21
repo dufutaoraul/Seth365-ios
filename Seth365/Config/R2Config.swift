@@ -19,20 +19,13 @@ enum R2Config {
     /// - Parameters:
     ///   - year: 年份 (如 2025, 2026)
     ///   - month: 月份 (1-12)
-    ///   - fileName: 文件名，如 "25.12.1.CS1.png" 或 "12.1.CS1.png"
+    ///   - fileName: 文件名，如 "25.12.21.CS1.png", "26.1.15.EH2.png"
     /// - Returns: 完整的壁纸 URL
+    /// 统一格式: /wallpapers/{年后两位}/{月两位数}/{文件名}
     static func wallpaperURL(year: Int, month: Int, fileName: String) -> URL? {
-        if year == 2025 {
-            // 2025年测试期间，路径包含年份文件夹
-            // 格式: /wallpapers/25/12/25.12.15.CS1.png
-            let yearFolder = year % 100  // 25
-            let urlString = "\(baseURL)/\(wallpaperPath)/\(yearFolder)/\(month)/\(fileName)"
-            return URL(string: urlString)
-        } else {
-            // 2026年正式版，路径只有月份
-            // 格式: /wallpapers/12/12.15.CS1.png
-            let urlString = "\(baseURL)/\(wallpaperPath)/\(month)/\(fileName)"
-            return URL(string: urlString)
-        }
+        let yearFolder = year % 100  // 25 或 26
+        let monthStr = String(format: "%02d", month)  // 01-12
+        let urlString = "\(baseURL)/\(wallpaperPath)/\(yearFolder)/\(monthStr)/\(fileName)"
+        return URL(string: urlString)
     }
 }

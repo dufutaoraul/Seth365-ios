@@ -42,17 +42,11 @@ struct Wallpaper: Identifiable, Equatable, Hashable {
     }
 
     /// 文件名
-    /// - 2025年格式: "25.12.1.CS1.png" (带年份前缀)
-    /// - 2026年格式: "12.1.CS1.png" (不带年份前缀)
+    /// 统一格式: "{年后两位}.{月}.{日}.{类型}.png"
+    /// 示例: "25.12.21.CS1.png", "26.1.15.EH2.png"
     var fileName: String {
-        if year == 2025 {
-            // 2025年测试期间，文件名包含年份前缀
-            let yearPrefix = year % 100  // 25
-            return "\(yearPrefix).\(month).\(day).\(language.rawValue)\(orientation.rawValue)\(index).png"
-        } else {
-            // 2026年正式版，文件名不含年份
-            return "\(month).\(day).\(language.rawValue)\(orientation.rawValue)\(index).png"
-        }
+        let yearPrefix = year % 100  // 25 或 26
+        return "\(yearPrefix).\(month).\(day).\(language.rawValue)\(orientation.rawValue)\(index).png"
     }
 
     /// 本地缓存路径
@@ -61,15 +55,11 @@ struct Wallpaper: Identifiable, Equatable, Hashable {
     }
 
     /// Bundle 内的资源相对路径（含扩展名）
-    /// 文件在 Wallpapers/{year}/{month}/ 子文件夹中
+    /// 统一格式: Wallpapers/{年后两位}/{月两位数}/{文件名}
     var bundleRelativePath: String {
-        if year == 2025 {
-            // 2025年文件在 Wallpapers/25/12/ 目录
-            return "Wallpapers/25/\(month)/\(fileName)"
-        } else {
-            // 2026年文件在 Wallpapers/{month}/ 目录
-            return "Wallpapers/\(month)/\(fileName)"
-        }
+        let yearPrefix = year % 100
+        let monthStr = String(format: "%02d", month)
+        return "Wallpapers/\(yearPrefix)/\(monthStr)/\(fileName)"
     }
 
     /// Bundle 内的完整路径
