@@ -12,12 +12,15 @@ struct WallpaperPageView: View {
     let wallpapers: [Wallpaper]
     @Binding var currentIndex: Int
     var onTap: (() -> Void)?
+    @ObservedObject private var userDefaults = UserDefaultsManager.shared
 
     var body: some View {
         TabView(selection: $currentIndex) {
             ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
                 WallpaperImageView(wallpaper: wallpaper, onTap: onTap)
                     .tag(index)
+                    // 当显示模式改变时强制重新渲染
+                    .id("\(wallpaper.id)_\(userDefaults.displayMode.rawValue)")
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
