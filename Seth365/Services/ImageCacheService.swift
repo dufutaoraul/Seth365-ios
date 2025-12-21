@@ -325,8 +325,12 @@ actor ImageCacheService {
     /// 从磁盘缓存获取
     private func getFromDisk(key: String) -> UIImage? {
         let fileURL = diskCacheDirectory.appendingPathComponent(key)
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return nil
+        }
         guard let data = try? Data(contentsOf: fileURL),
               let image = UIImage(data: data) else {
+            print("⚠️ 缓存文件损坏: \(key)")
             return nil
         }
         return image
@@ -334,8 +338,20 @@ actor ImageCacheService {
 
     /// 保存到磁盘缓存
     private func saveToDisk(image: UIImage, key: String) {
+        // 确保目录存在
+        try? FileManager.default.createDirectory(at: diskCacheDirectory, withIntermediateDirectories: true)
+
         let fileURL = diskCacheDirectory.appendingPathComponent(key)
-        guard let data = image.pngData() else { return }
-        try? data.write(to: fileURL)
+        guard let data = image.pngData() else {
+            print("❌ 保存失败: 无法生成 PNG 数据 - \(key)")
+            return
+        }
+
+        do {
+            try data.write(to: fileURL)
+            print("💾 已缓存: \(key) (\(data.count / 1024)KB)")
+        } catch {
+            print("❌ 保存失败: \(key) - \(error.localizedDescription)")
+        }
     }
 }

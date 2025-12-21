@@ -51,9 +51,12 @@ class WallpaperPreloadService: ObservableObject {
 
         // 1. 获取远程配置
         let config = await WallpaperConfigService.shared.fetchConfig()
+        appLog(.info, "远程配置: version=\(config.version), range=\(config.startDate)~\(config.endDate)", source: "Preload")
 
         // 2. 检查版本号
         let localVersion = UserDefaultsManager.shared.wallpaperVersion
+        appLog(.info, "本地版本: \(localVersion)", source: "Preload")
+
         if config.version == localVersion && localVersion > 0 {
             appLog(.info, "壁纸版本相同 (v\(localVersion))，跳过同步", source: "Preload")
             statusMessage = "壁纸已是最新版本"
@@ -61,18 +64,23 @@ class WallpaperPreloadService: ObservableObject {
             return
         }
 
-        appLog(.info, "壁纸版本: 本地=\(localVersion), 远程=\(config.version)，开始同步", source: "Preload")
+        appLog(.info, "壁纸版本不同: 本地=\(localVersion), 远程=\(config.version)，开始检查缓存", source: "Preload")
 
         // 3. 根据配置生成壁纸列表
         let allWallpapers = generateWallpaperList(from: config)
         appLog(.info, "配置日期范围: \(config.startDate) ~ \(config.endDate)，共 \(allWallpapers.count) 张", source: "Preload")
 
         // 4. 检查哪些需要下载
+        // 先打印缓存目录路径（调试用）
+        let sampleWallpaper = allWallpapers.first!
+        let cachePath = ImageCacheService.shared.cacheURL(for: sampleWallpaper).deletingLastPathComponent().path
+        appLog(.debug, "缓存目录: \(cachePath)", source: "Preload")
+
         let bundledWallpapers = allWallpapers.filter { $0.isInBundle }
         let cachedWallpapers = allWallpapers.filter { !$0.isInBundle && isCached($0) }
         let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle && !isCached($0) }
 
-        appLog(.info, "壁纸统计: 内置=\(bundledWallpapers.count), 缓存=\(cachedWallpapers.count), 需下载=\(wallpapersToDownload.count)", source: "Preload")
+        appLog(.info, "壁纸统计: 内置=\(bundledWallpapers.count), 已缓存=\(cachedWallpapers.count), 需下载=\(wallpapersToDownload.count)", source: "Preload")
 
         totalCount = wallpapersToDownload.count
 
@@ -187,7 +195,12 @@ class WallpaperPreloadService: ObservableObject {
     /// 检查壁纸是否已缓存
     private func isCached(_ wallpaper: Wallpaper) -> Bool {
         let cacheURL = ImageCacheService.shared.cacheURL(for: wallpaper)
-        return FileManager.default.fileExists(atPath: cacheURL.path)
+        let exists = FileManager.default.fileExists(atPath: cacheURL.path)
+        // 调试：检查缓存状态
+        if !exists {
+            appLog(.debug, "未缓存: \(wallpaper.cacheKey) -> \(cacheURL.path)", source: "Preload")
+        }
+        return exists
     }
 
     /// 仅预加载今日壁纸
