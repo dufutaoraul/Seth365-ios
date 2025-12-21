@@ -112,7 +112,7 @@ struct PosterEditorView: View {
                         .frame(height: 240)
                 }
             }
-            .navigationTitle("生成海报")
+            .navigationTitle("生成我的海报")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -378,23 +378,33 @@ struct PosterEditorView: View {
                             .foregroundColor(.secondary)
                     }
                 } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 50, height: 50)
-                        .overlay(
-                            Image(systemName: "qrcode")
-                                .foregroundColor(.gray)
-                        )
+                    Button(action: { showQRCodePicker = true }) {
+                        HStack {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 50, height: 50)
+                                .overlay(
+                                    Image(systemName: "qrcode")
+                                        .foregroundColor(.gray)
+                                )
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("未设置二维码")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundColor(.red)
-                        Text("请先在「设置」中上传二维码")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("未设置二维码")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.red)
+                                HStack(spacing: 4) {
+                                    Text("点击上传二维码")
+                                        .font(.caption)
+                                        .foregroundColor(.blue)
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption2)
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
                     }
+                    .buttonStyle(.plain)
                 }
 
                 Spacer()
