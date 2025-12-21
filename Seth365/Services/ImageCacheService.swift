@@ -139,6 +139,16 @@ actor ImageCacheService {
         return size
     }
 
+    /// 获取壁纸的缓存文件 URL
+    /// - Parameter wallpaper: 壁纸模型
+    /// - Returns: 缓存文件的 URL
+    nonisolated func cacheURL(for wallpaper: Wallpaper) -> URL {
+        // diskCacheDirectory 是在 init 时设置的不可变路径，可以安全地从非隔离上下文访问
+        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let wallpaperCacheDir = cacheDir.appendingPathComponent("WallpaperCache", isDirectory: true)
+        return wallpaperCacheDir.appendingPathComponent(wallpaper.cacheKey)
+    }
+
     /// 检查缓存是否需要更新
     /// - Parameter wallpaper: 壁纸模型
     /// - Returns: 是否需要更新（true = 需要重新下载）

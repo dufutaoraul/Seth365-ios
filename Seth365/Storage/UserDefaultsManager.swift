@@ -27,6 +27,7 @@ class UserDefaultsManager: ObservableObject {
         static let switchRandomIndex = "switchRandomIndex"
         static let customSelectedDates = "customSelectedDates"
         static let displayMode = "displayMode"
+        static let wallpaperVersion = "wallpaperVersion"
     }
 
     // MARK: - 偏好语言
@@ -97,6 +98,19 @@ class UserDefaultsManager: ObservableObject {
         didSet {
             defaults.set(displayMode.rawValue, forKey: Keys.displayMode)
         }
+    }
+
+    // MARK: - 壁纸版本号
+
+    /// 本地存储的壁纸版本号（与 R2 wallpaper-config.json 的 version 对应）
+    var wallpaperVersion: Int {
+        get { defaults.integer(forKey: Keys.wallpaperVersion) }
+        set { defaults.set(newValue, forKey: Keys.wallpaperVersion) }
+    }
+
+    /// 清除壁纸版本号（清除缓存时调用，确保重新下载）
+    func clearWallpaperVersion() {
+        defaults.removeObject(forKey: Keys.wallpaperVersion)
     }
 
     // MARK: - 自定义选择的日期
@@ -189,6 +203,7 @@ class UserDefaultsManager: ObservableObject {
         defaults.removeObject(forKey: Keys.switchDateRange)
         defaults.removeObject(forKey: Keys.switchRandomIndex)
         defaults.removeObject(forKey: Keys.displayMode)
+        // 注意：不清除 wallpaperVersion，避免重复下载
 
         // 重新加载默认值
         preferredLanguage = nil  // 全部

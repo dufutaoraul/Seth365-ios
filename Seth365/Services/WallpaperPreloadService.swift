@@ -2,7 +2,7 @@
 //  WallpaperPreloadService.swift
 //  Seth365
 //
-//  壁纸预加载服务 - 启动时自动下载壁纸
+//  壁纸预加载服务 - 基于 R2 配置的智能同步
 //
 
 import Foundation
@@ -37,9 +37,9 @@ class WallpaperPreloadService: ObservableObject {
 
     private init() {}
 
-    // MARK: - 预加载壁纸
+    // MARK: - 主同步方法
 
-    /// 预加载所有壁纸（不在 Bundle 中的自动下载，已下载的检查更新）
+    /// 预加载壁纸（基于 R2 配置的智能同步）
     @MainActor
     func preloadWallpapers() async {
         isLoading = true
@@ -47,58 +47,52 @@ class WallpaperPreloadService: ObservableObject {
         downloadedCount = 0
         hasError = false
         errorMessage = ""
+        statusMessage = "正在获取配置..."
 
-        // 获取全年所有壁纸（2025年12月测试 + 2026年全年）
-        let allWallpapers = getAllYearWallpapers()
+        // 1. 获取远程配置
+        let config = await WallpaperConfigService.shared.fetchConfig()
 
-        // 调试：检查第一个壁纸的 Bundle 路径
-        if let firstWallpaper = allWallpapers.first {
-            appLog(.debug, "检查壁纸: \(firstWallpaper.fileName)", source: "Preload")
-            appLog(.debug, "Bundle相对路径: \(firstWallpaper.bundleRelativePath)", source: "Preload")
-            if let fullPath = firstWallpaper.bundleFullPath {
-                appLog(.debug, "Bundle完整路径: \(fullPath)", source: "Preload")
-                let exists = FileManager.default.fileExists(atPath: fullPath)
-                appLog(.debug, "文件存在: \(exists)", source: "Preload")
-            } else {
-                appLog(.error, "无法获取 Bundle 资源路径", source: "Preload")
-            }
-            appLog(.debug, "isInBundle: \(firstWallpaper.isInBundle)", source: "Preload")
+        // 2. 检查版本号
+        let localVersion = UserDefaultsManager.shared.wallpaperVersion
+        if config.version == localVersion && localVersion > 0 {
+            appLog(.info, "壁纸版本相同 (v\(localVersion))，跳过同步", source: "Preload")
+            statusMessage = "壁纸已是最新版本"
+            isLoading = false
+            return
         }
 
-        // 分类壁纸
-        let bundledWallpapers = allWallpapers.filter { $0.isInBundle }
-        let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle }
+        appLog(.info, "壁纸版本: 本地=\(localVersion), 远程=\(config.version)，开始同步", source: "Preload")
 
-        appLog(.info, "壁纸统计: 总数=\(allWallpapers.count), 内置=\(bundledWallpapers.count), 需下载=\(wallpapersToDownload.count)", source: "Preload")
+        // 3. 根据配置生成壁纸列表
+        let allWallpapers = generateWallpaperList(from: config)
+        appLog(.info, "配置日期范围: \(config.startDate) ~ \(config.endDate)，共 \(allWallpapers.count) 张", source: "Preload")
+
+        // 4. 检查哪些需要下载
+        let bundledWallpapers = allWallpapers.filter { $0.isInBundle }
+        let cachedWallpapers = allWallpapers.filter { !$0.isInBundle && isCached($0) }
+        let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle && !isCached($0) }
+
+        appLog(.info, "壁纸统计: 内置=\(bundledWallpapers.count), 缓存=\(cachedWallpapers.count), 需下载=\(wallpapersToDownload.count)", source: "Preload")
 
         totalCount = wallpapersToDownload.count
 
         if wallpapersToDownload.isEmpty {
-            statusMessage = "所有壁纸已内置 (\(bundledWallpapers.count) 张)"
+            statusMessage = "所有壁纸已准备就绪 (\(allWallpapers.count) 张)"
+            // 更新本地版本号
+            UserDefaultsManager.shared.wallpaperVersion = config.version
             isLoading = false
             return
         }
 
         statusMessage = "正在同步壁纸 (0/\(wallpapersToDownload.count))..."
 
-        // 批量下载（检查是否需要更新）
+        // 5. 下载缺失的壁纸
         var successCount = 0
         var failedCount = 0
-        var updatedCount = 0
 
         for (index, wallpaper) in wallpapersToDownload.enumerated() {
             do {
-                // 检查是否需要更新（比较 ETag/Last-Modified）
-                let needsUpdate = await ImageCacheService.shared.needsUpdate(for: wallpaper)
-
-                if needsUpdate {
-                    // 需要更新，强制重新下载
-                    _ = try await ImageCacheService.shared.forceUpdateImage(for: wallpaper)
-                    updatedCount += 1
-                } else {
-                    // 不需要更新，使用缓存或下载新的
-                    _ = try await ImageCacheService.shared.getOrDownloadImage(for: wallpaper)
-                }
+                _ = try await ImageCacheService.shared.getOrDownloadImage(for: wallpaper)
                 successCount += 1
             } catch {
                 failedCount += 1
@@ -114,21 +108,43 @@ class WallpaperPreloadService: ObservableObject {
             }
         }
 
+        // 6. 更新本地版本号
+        UserDefaultsManager.shared.wallpaperVersion = config.version
+
         if failedCount > 0 {
             hasError = true
             errorMessage = "\(failedCount) 张壁纸下载失败"
             statusMessage = "同步完成（\(successCount) 成功，\(failedCount) 失败）"
         } else {
-            let updateInfo = updatedCount > 0 ? "，\(updatedCount) 张已更新" : ""
-            statusMessage = "同步完成（\(bundledWallpapers.count) 张内置 + \(successCount) 张已下载\(updateInfo)）"
+            statusMessage = "同步完成（\(bundledWallpapers.count + cachedWallpapers.count) 张已有 + \(successCount) 张新下载）"
         }
 
         isLoading = false
     }
 
-    /// 获取所有可用壁纸（仅 R2 上有的：2025年12月21日 - 2026年2月28日）
-    /// 注意：当 R2 添加更多月份时，需要更新此方法
-    private func getAllYearWallpapers() -> [Wallpaper] {
+    // MARK: - 辅助方法
+
+    /// 根据配置生成壁纸列表
+    private func generateWallpaperList(from config: WallpaperConfig) -> [Wallpaper] {
+        guard let startDate = config.startDateParsed,
+              let endDate = config.endDateParsed else {
+            appLog(.error, "配置日期解析失败，使用默认范围", source: "Preload")
+            return generateFallbackWallpaperList()
+        }
+
+        var wallpapers: [Wallpaper] = []
+        var currentDate = startDate
+
+        while currentDate <= endDate {
+            wallpapers.append(contentsOf: Wallpaper.allWallpapers(for: currentDate))
+            currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate) ?? endDate
+        }
+
+        return wallpapers
+    }
+
+    /// 生成默认壁纸列表（网络不可用时）
+    private func generateFallbackWallpaperList() -> [Wallpaper] {
         let calendar = Calendar.current
         var wallpapers: [Wallpaper] = []
 
@@ -165,9 +181,13 @@ class WallpaperPreloadService: ObservableObject {
             }
         }
 
-        // 总计：11天 × 8 + 31天 × 8 + 28天 × 8 = 88 + 248 + 224 = 560 张壁纸
-
         return wallpapers
+    }
+
+    /// 检查壁纸是否已缓存
+    private func isCached(_ wallpaper: Wallpaper) -> Bool {
+        let cacheURL = ImageCacheService.shared.cacheURL(for: wallpaper)
+        return FileManager.default.fileExists(atPath: cacheURL.path)
     }
 
     /// 仅预加载今日壁纸
@@ -198,138 +218,40 @@ class WallpaperPreloadService: ObservableObject {
 
     /// 检查是否需要预加载
     func shouldPreload() -> Bool {
-        // 获取全年壁纸
-        let allWallpapers = getAllYearWallpapers()
-
-        // 检查是否有不在 Bundle 中的壁纸需要下载
-        let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle }
-        return !wallpapersToDownload.isEmpty
+        // 简单检查：版本号为0表示从未同步过
+        return UserDefaultsManager.shared.wallpaperVersion == 0
     }
 
-    // MARK: - 检查缓存更新
-
-    /// 检查并更新过期的缓存（强制从服务器重新下载）
-    @MainActor
-    func checkAndUpdateCache() async {
-        isLoading = true
-        progress = 0.0
-        downloadedCount = 0
-        hasError = false
-        errorMessage = ""
-
-        let allWallpapers = getAllYearWallpapers()
-
-        // 只检查不在 Bundle 中的壁纸
-        let wallpapersToCheck = allWallpapers.filter { !$0.isInBundle }
-        let bundledCount = allWallpapers.count - wallpapersToCheck.count
-
-        totalCount = wallpapersToCheck.count
-
-        if wallpapersToCheck.isEmpty {
-            statusMessage = "所有壁纸已内置，无需更新"
-            isLoading = false
-            return
-        }
-
-        statusMessage = "正在检查更新 (0/\(wallpapersToCheck.count))..."
-
-        var updatedCount = 0
-
-        for (index, wallpaper) in wallpapersToCheck.enumerated() {
-            // 检查是否需要更新
-            let needsUpdate = await ImageCacheService.shared.needsUpdate(for: wallpaper)
-
-            if needsUpdate {
-                do {
-                    _ = try await ImageCacheService.shared.forceUpdateImage(for: wallpaper)
-                    updatedCount += 1
-                } catch {
-                    // 忽略单个错误，继续检查其他
-                }
-            }
-
-            downloadedCount = index + 1
-            progress = Double(downloadedCount) / Double(totalCount)
-
-            if downloadedCount % 10 == 0 || downloadedCount == totalCount {
-                statusMessage = "正在检查更新 (\(downloadedCount)/\(totalCount))..."
-            }
-        }
-
-        statusMessage = updatedCount > 0
-            ? "检查完成，已更新 \(updatedCount) 张壁纸"
-            : "检查完成，所有壁纸均为最新"
-        isLoading = false
-    }
+    // MARK: - 强制更新
 
     /// 清除缓存并重新下载
     @MainActor
     func clearAndRedownload() async {
         appLog(.info, "开始强制更新...", source: "Preload")
 
-        // 1. 清除 ImageCacheService 的缓存
+        // 1. 清除图片缓存
         appLog(.info, "清除图片缓存...", source: "Preload")
         await ImageCacheService.shared.clearAllCache()
 
-        // 2. 清除 URLSession 的缓存
+        // 2. 清除 URLSession 缓存
         appLog(.info, "清除网络缓存...", source: "Preload")
         URLCache.shared.removeAllCachedResponses()
 
-        // 3. 重新下载所有图片（不包括 Bundle 内置的）
-        appLog(.info, "开始重新下载...", source: "Preload")
-        isLoading = true
-        progress = 0.0
-        downloadedCount = 0
-        hasError = false
-        errorMessage = ""
+        // 3. 清除壁纸版本号（强制重新同步）
+        UserDefaultsManager.shared.clearWallpaperVersion()
 
-        let allWallpapers = getAllYearWallpapers()
+        // 4. 重新同步
+        appLog(.info, "开始重新同步...", source: "Preload")
+        await preloadWallpapers()
+    }
 
-        // 过滤出需要下载的壁纸（不在 Bundle 中的）
-        let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle }
-        let bundledCount = allWallpapers.count - wallpapersToDownload.count
+    // MARK: - 检查更新
 
-        totalCount = wallpapersToDownload.count
-
-        if wallpapersToDownload.isEmpty {
-            statusMessage = "所有壁纸已内置，无需下载"
-            isLoading = false
-            return
-        }
-
-        statusMessage = "正在重新下载 (0/\(totalCount))..."
-        appLog(.info, "需要下载 \(totalCount) 张图片（\(bundledCount) 张已内置）", source: "Preload")
-
-        var successCount = 0
-        var failedCount = 0
-
-        for (index, wallpaper) in wallpapersToDownload.enumerated() {
-            do {
-                // 使用强制下载（忽略缓存）
-                _ = try await ImageCacheService.shared.forceUpdateImage(for: wallpaper)
-                successCount += 1
-            } catch {
-                failedCount += 1
-                appLog(.error, "下载失败: \(wallpaper.fileName) - \(error.localizedDescription)", source: "Preload")
-            }
-
-            downloadedCount = index + 1
-            progress = Double(downloadedCount) / Double(totalCount)
-
-            if downloadedCount % 10 == 0 || downloadedCount == totalCount {
-                statusMessage = "正在重新下载 (\(downloadedCount)/\(totalCount))..."
-            }
-        }
-
-        if failedCount > 0 {
-            hasError = true
-            errorMessage = "\(failedCount) 张壁纸下载失败"
-            statusMessage = "下载完成（\(successCount) 成功，\(failedCount) 失败）"
-        } else {
-            statusMessage = "更新完成（\(bundledCount) 张内置 + \(successCount) 张已下载）"
-        }
-
-        appLog(.info, "强制更新完成: \(successCount) 成功, \(failedCount) 失败", source: "Preload")
-        isLoading = false
+    /// 检查是否有新壁纸（不下载，只检查）
+    @MainActor
+    func checkForUpdates() async -> Bool {
+        let config = await WallpaperConfigService.shared.fetchConfig()
+        let localVersion = UserDefaultsManager.shared.wallpaperVersion
+        return config.version > localVersion
     }
 }
