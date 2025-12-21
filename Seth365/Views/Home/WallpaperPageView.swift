@@ -11,11 +11,12 @@ import SwiftUI
 struct WallpaperPageView: View {
     let wallpapers: [Wallpaper]
     @Binding var currentIndex: Int
+    var onTap: (() -> Void)?
 
     var body: some View {
         TabView(selection: $currentIndex) {
             ForEach(Array(wallpapers.enumerated()), id: \.element.id) { index, wallpaper in
-                WallpaperImageView(wallpaper: wallpaper)
+                WallpaperImageView(wallpaper: wallpaper, onTap: onTap)
                     .tag(index)
             }
         }
@@ -27,6 +28,7 @@ struct WallpaperPageView: View {
 /// 单张壁纸图片视图
 struct WallpaperImageView: View {
     let wallpaper: Wallpaper
+    var onTap: (() -> Void)?
     @State private var image: UIImage?
     @State private var isLoading = true
 
@@ -43,12 +45,18 @@ struct WallpaperImageView: View {
                             .rotationEffect(.degrees(90))
                             .frame(width: geometry.size.height, height: geometry.size.width)
                             .frame(width: geometry.size.width, height: geometry.size.height)
+                            .onTapGesture {
+                                onTap?()
+                            }
                     } else {
                         // 竖版壁纸正常显示
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .onTapGesture {
+                                onTap?()
+                            }
                     }
                 } else if isLoading {
                     ProgressView()
@@ -107,6 +115,7 @@ struct WallpaperTitleView: View {
 #Preview {
     WallpaperPageView(
         wallpapers: Wallpaper.allWallpapers(for: Date()),
-        currentIndex: .constant(0)
+        currentIndex: .constant(0),
+        onTap: nil
     )
 }

@@ -2,7 +2,7 @@
 
 > 此文档记录项目的核心信息、开发进度和重要决策。每次重大改动都会同步更新。
 >
-> 最后更新：2025-12-19
+> 最后更新：2025-12-21
 
 ---
 
@@ -101,6 +101,15 @@ Seth365/
     │   └── WallpaperOrientation.swift
     │
     ├── Views/
+    │   ├── Home/                        # v1.2.0 新增
+    │   │   ├── HomeView.swift           # 首页视图（日历+轮播一体化）
+    │   │   ├── DateHeaderView.swift     # 日期栏组件
+    │   │   ├── CalendarGridView.swift   # 可折叠日历网格
+    │   │   ├── FilterTabsView.swift     # 筛选标签组件
+    │   │   ├── WallpaperPageView.swift  # 壁纸大图轮播
+    │   │   ├── ThumbnailScrollView.swift # 缩略图滚动条
+    │   │   └── ActionButtonsView.swift  # 操作按钮组件
+    │   │
     │   ├── Calendar/
     │   │   ├── CalendarView.swift
     │   │   ├── MonthView.swift
@@ -119,6 +128,7 @@ Seth365/
     │       └── ShortcutsGuideView.swift
     │
     ├── ViewModels/
+    │   ├── HomeViewModel.swift          # v1.2.0 新增
     │   ├── CalendarViewModel.swift
     │   ├── WallpaperViewModel.swift
     │   └── PosterViewModel.swift
@@ -246,6 +256,21 @@ Seth365/
 - [x] 显示最新版本号
 - [x] "前往 App Store 更新" 按钮
 
+### 阶段 12: v1.2.0 首页重构 ✅ 完成
+- [x] DateCellState 枚举（test/unlocked/locked 三种状态）
+- [x] HomeView 首页视图（日历+轮播一体化）
+- [x] HomeViewModel 首页视图模型
+- [x] DateHeaderView 日期栏组件（带折叠按钮）
+- [x] CalendarGridView 可折叠日历网格
+- [x] FilterTabsView 筛选标签组件
+- [x] WallpaperPageView 壁纸大图轮播
+- [x] ThumbnailScrollView 缩略图滚动条
+- [x] ActionButtonsView 操作按钮（保存/海报/设置壁纸）
+- [x] 点击大图进入全屏详情视图
+- [x] 保存成功后显示"去设置壁纸"按钮
+- [x] 月份导航限制（不能超出已解锁范围）
+- [x] 下载逻辑优化（仅下载 12/21 - 2/28 共 560 张）
+
 ---
 
 ## 六、iOS 特殊限制
@@ -307,6 +332,10 @@ iOS **没有公开 API** 允许 App 直接设置壁纸。解决方案：
 | 2025-12-17 | 壁纸内置到 Bundle | 减少网络依赖，离线可用 |
 | 2025-12-17 | 版本号使用语义化版本 | MARKETING_VERSION = 1.0.0 |
 | 2025-12-17 | 图片加载优先级 | Bundle → 磁盘缓存 → 网络 |
+| 2025-12-21 | v1.2.0 首页重构 | 日历+轮播一体化设计，提升用户体验 |
+| 2025-12-21 | 下载范围限制 | 仅下载 12/21 - 2/28（R2 实际存在的壁纸） |
+| 2025-12-21 | DateCellState 三态设计 | test/unlocked/locked 区分不同日期状态 |
+| 2025-12-21 | TabBar 简化为两个 | 首页（日历+壁纸）+ 设置 |
 
 ---
 

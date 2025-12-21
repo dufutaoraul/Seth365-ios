@@ -11,6 +11,7 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var showCalendar = true
+    @State private var showDetailView = false
 
     var body: some View {
         NavigationStack {
@@ -57,7 +58,8 @@ struct HomeView: View {
                 } else {
                     WallpaperPageView(
                         wallpapers: viewModel.filteredWallpapers,
-                        currentIndex: $viewModel.currentWallpaperIndex
+                        currentIndex: $viewModel.currentWallpaperIndex,
+                        onTap: { showDetailView = true }
                     )
 
                     // 壁纸信息栏
@@ -74,7 +76,8 @@ struct HomeView: View {
                     ActionButtonsView(
                         wallpaper: viewModel.currentWallpaper,
                         onSave: { viewModel.saveCurrentWallpaper() },
-                        onPoster: { viewModel.openPosterEditor() }
+                        onPoster: { viewModel.openPosterEditor() },
+                        onSetWallpaper: { viewModel.openPhotosApp() }
                     )
                     .padding(.bottom, 16)
                 }
@@ -85,6 +88,14 @@ struct HomeView: View {
             .sheet(isPresented: $viewModel.showPosterEditor) {
                 if let image = viewModel.posterImage {
                     PosterEditorView(wallpaperImage: image)
+                }
+            }
+            .fullScreenCover(isPresented: $showDetailView) {
+                if let wallpaper = viewModel.currentWallpaper {
+                    WallpaperDetailView(
+                        wallpaper: wallpaper,
+                        image: viewModel.currentWallpaperImage
+                    )
                 }
             }
             .alert("calendar.alert.locked".localized, isPresented: $viewModel.showLockedAlert) {
@@ -98,7 +109,14 @@ struct HomeView: View {
                 Text(viewModel.navigationAlertMessage)
             }
             .alert(viewModel.saveAlertTitle, isPresented: $viewModel.showSaveAlert) {
-                Button("ok".localized) { }
+                if viewModel.saveAlertTitle == "wallpaper.save.success".localized {
+                    Button("ok".localized) { }
+                    Button("wallpaper.save.go_set".localized) {
+                        viewModel.openPhotosApp()
+                    }
+                } else {
+                    Button("ok".localized) { }
+                }
             } message: {
                 Text(viewModel.saveAlertMessage)
             }

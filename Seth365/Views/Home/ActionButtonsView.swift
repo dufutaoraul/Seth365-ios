@@ -12,38 +12,59 @@ struct ActionButtonsView: View {
     let wallpaper: Wallpaper?
     let onSave: () -> Void
     let onPoster: () -> Void
+    var onSetWallpaper: (() -> Void)?
 
     var body: some View {
-        HStack(spacing: 16) {
-            // 保存按钮
-            Button(action: onSave) {
-                HStack(spacing: 8) {
-                    Image(systemName: "square.and.arrow.down")
-                    Text("wallpaper.detail.save".localized)
+        VStack(spacing: 12) {
+            // 第一行：保存和海报按钮
+            HStack(spacing: 12) {
+                // 保存按钮
+                Button(action: onSave) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "square.and.arrow.down")
+                        Text("wallpaper.detail.save".localized)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.blue)
+                    .cornerRadius(10)
                 }
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(Color.blue)
-                .cornerRadius(12)
-            }
-            .disabled(wallpaper == nil)
+                .disabled(wallpaper == nil)
 
-            // 生成海报按钮
-            Button(action: onPoster) {
-                HStack(spacing: 8) {
-                    Image(systemName: "doc.richtext")
-                    Text("wallpaper.detail.poster".localized)
+                // 生成海报按钮
+                Button(action: onPoster) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "doc.richtext")
+                        Text("wallpaper.detail.poster".localized)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.blue)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(10)
                 }
-                .font(.headline)
-                .foregroundColor(.blue)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(12)
+                .disabled(wallpaper == nil)
             }
-            .disabled(wallpaper == nil)
+
+            // 第二行：设置壁纸按钮
+            if let onSetWallpaper = onSetWallpaper {
+                Button(action: onSetWallpaper) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "photo.on.rectangle")
+                        Text("wallpaper.save.go_set".localized)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.orange)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.orange.opacity(0.1))
+                    .cornerRadius(10)
+                }
+                .disabled(wallpaper == nil)
+            }
         }
         .padding(.horizontal)
     }
@@ -108,7 +129,8 @@ struct InfoTag: View {
         ActionButtonsView(
             wallpaper: Wallpaper.allWallpapers(for: Date()).first,
             onSave: {},
-            onPoster: {}
+            onPoster: {},
+            onSetWallpaper: {}
         )
     }
 }

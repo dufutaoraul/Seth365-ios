@@ -126,12 +126,13 @@ class WallpaperPreloadService: ObservableObject {
         isLoading = false
     }
 
-    /// 获取全年所有壁纸（2025年12月 + 2026年全年）
+    /// 获取所有可用壁纸（仅 R2 上有的：2025年12月21日 - 2026年2月28日）
+    /// 注意：当 R2 添加更多月份时，需要更新此方法
     private func getAllYearWallpapers() -> [Wallpaper] {
         let calendar = Calendar.current
         var wallpapers: [Wallpaper] = []
 
-        // 2025年12月（测试数据，12月21日 - 12月31日）
+        // 2025年12月（12月21日 - 12月31日）
         var dec2025Components = DateComponents()
         dec2025Components.year = 2025
         dec2025Components.month = 12
@@ -142,21 +143,29 @@ class WallpaperPreloadService: ObservableObject {
             }
         }
 
-        // 2026年全年（1月1日 - 12月31日）
-        var components2026 = DateComponents()
-        components2026.year = 2026
-
-        for month in 1...12 {
-            components2026.month = month
-            let daysInMonth = calendar.range(of: .day, in: .month, for: calendar.date(from: components2026)!)!.count
-
-            for day in 1...daysInMonth {
-                components2026.day = day
-                if let date = calendar.date(from: components2026) {
-                    wallpapers.append(contentsOf: Wallpaper.allWallpapers(for: date))
-                }
+        // 2026年1月（1日 - 31日）
+        var jan2026Components = DateComponents()
+        jan2026Components.year = 2026
+        jan2026Components.month = 1
+        for day in 1...31 {
+            jan2026Components.day = day
+            if let date = calendar.date(from: jan2026Components) {
+                wallpapers.append(contentsOf: Wallpaper.allWallpapers(for: date))
             }
         }
+
+        // 2026年2月（1日 - 28日）
+        var feb2026Components = DateComponents()
+        feb2026Components.year = 2026
+        feb2026Components.month = 2
+        for day in 1...28 {
+            feb2026Components.day = day
+            if let date = calendar.date(from: feb2026Components) {
+                wallpapers.append(contentsOf: Wallpaper.allWallpapers(for: date))
+            }
+        }
+
+        // 总计：11天 × 8 + 31天 × 8 + 28天 × 8 = 88 + 248 + 224 = 560 张壁纸
 
         return wallpapers
     }

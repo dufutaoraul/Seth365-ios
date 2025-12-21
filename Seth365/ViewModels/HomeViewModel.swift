@@ -89,6 +89,11 @@ class HomeViewModel: ObservableObject {
         return filteredWallpapers[currentWallpaperIndex]
     }
 
+    /// 当前壁纸图片（用于详情视图）
+    var currentWallpaperImage: UIImage? {
+        return posterImage
+    }
+
     /// 是否可以切换到上一个月
     var canGoPrevious: Bool {
         guard currentMonthIndex > 0 else { return false }
@@ -269,6 +274,27 @@ class HomeViewModel: ObservableObject {
                 saveAlertTitle = "wallpaper.save.failed".localized
                 saveAlertMessage = error.localizedDescription
                 showSaveAlert = true
+            }
+        }
+    }
+
+    /// 打开照片 App（引导设置壁纸）
+    func openPhotosApp() {
+        if let url = URL(string: "photos-redirect://") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    /// 预加载当前壁纸图片（用于详情视图）
+    func preloadCurrentWallpaperImage() {
+        guard let wallpaper = currentWallpaper else { return }
+
+        Task {
+            do {
+                let image = try await ImageCacheService.shared.getOrDownloadImage(for: wallpaper)
+                posterImage = image
+            } catch {
+                // 忽略错误
             }
         }
     }
