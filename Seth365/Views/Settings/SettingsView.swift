@@ -29,12 +29,49 @@ struct SettingsView: View {
                     // 方向选择（三选项）
                     orientationPicker
 
-                    // 显示模式
-                    displayModePicker
+                    // 显示模式选择器
+                    Picker("显示模式", selection: $userDefaults.displayMode) {
+                        ForEach(WallpaperDisplayMode.allCases) { mode in
+                            Text(mode.displayName).tag(mode)
+                        }
+                    }
                 } header: {
                     Text("settings.preferences".localized)
                 } footer: {
                     Text("settings.preferences.hint".localized)
+                }
+
+                // MARK: - 显示模式预览
+                Section {
+                    // 预览
+                    DisplayModePreviewView(displayMode: userDefaults.displayMode)
+                        .frame(height: 200)
+                        .listRowInsets(EdgeInsets())
+                        .id("preview_\(userDefaults.displayMode.rawValue)")
+
+                    // 应用按钮
+                    Button(action: {
+                        NotificationCenter.default.post(name: .displayModeChanged, object: nil)
+                        showDisplayModeApplied = true
+                    }) {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "checkmark.circle.fill")
+                            Text("应用此显示模式")
+                            Spacer()
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .listRowBackground(Color.blue)
+                } header: {
+                    Text("显示模式预览")
+                } footer: {
+                    Text("选择显示模式后点击「应用」按钮生效")
+                }
+                .alert("已应用", isPresented: $showDisplayModeApplied) {
+                    Button("好的") { }
+                } message: {
+                    Text("显示模式已更改为「\(userDefaults.displayMode.displayName)」")
                 }
 
                 // MARK: - 我的二维码
@@ -262,47 +299,9 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - 显示模式选择器
+    // MARK: - 显示模式状态
 
     @State private var showDisplayModeApplied = false
-
-    private var displayModePicker: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Picker("显示模式", selection: $userDefaults.displayMode) {
-                ForEach(WallpaperDisplayMode.allCases) { mode in
-                    Text(mode.displayName).tag(mode)
-                }
-            }
-
-            // 显示模式预览
-            DisplayModePreviewView(displayMode: userDefaults.displayMode)
-                .frame(height: 200)
-                .cornerRadius(12)
-                .id("preview_\(userDefaults.displayMode.rawValue)")
-
-            // 确认应用按钮
-            Button(action: {
-                // 发送通知让其他视图刷新
-                NotificationCenter.default.post(name: .displayModeChanged, object: nil)
-                showDisplayModeApplied = true
-            }) {
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                    Text("应用此显示模式")
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            .alert("已应用", isPresented: $showDisplayModeApplied) {
-                Button("好的") { }
-            } message: {
-                Text("显示模式已更改为「\(userDefaults.displayMode.displayName)」，所有壁纸将以此模式显示。")
-            }
-        }
-    }
 
     // MARK: - 时间格式化
 

@@ -12,6 +12,8 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var showCalendar = true
     @State private var showDetailView = false
+    @State private var displayModeRefreshID = UUID()
+    @State private var lastKnownDisplayMode: WallpaperDisplayMode = UserDefaultsManager.shared.displayMode
 
     var body: some View {
         NavigationStack {
@@ -61,6 +63,7 @@ struct HomeView: View {
                         currentIndex: $viewModel.currentWallpaperIndex,
                         onTap: { showDetailView = true }
                     )
+                    .id("wallpaper_page_\(displayModeRefreshID)")
 
                     // 壁纸信息栏
                     WallpaperInfoBar(wallpaper: viewModel.currentWallpaper)
@@ -119,6 +122,14 @@ struct HomeView: View {
                 }
             } message: {
                 Text(viewModel.saveAlertMessage)
+            }
+            .onAppear {
+                // 检测显示模式是否改变，如有改变则强制刷新壁纸视图
+                let currentMode = UserDefaultsManager.shared.displayMode
+                if currentMode != lastKnownDisplayMode {
+                    lastKnownDisplayMode = currentMode
+                    displayModeRefreshID = UUID()
+                }
             }
         }
     }

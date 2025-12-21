@@ -45,10 +45,11 @@ struct WallpaperImageView: View {
     var onTap: (() -> Void)?
     @State private var image: UIImage?
     @State private var isLoading = true
+    @ObservedObject private var userDefaults = UserDefaultsManager.shared
 
-    // 直接读取显示模式，确保每次渲染时获取最新值
-    private var displayMode: WallpaperDisplayMode {
-        UserDefaultsManager.shared.displayMode
+    // 从 ObservedObject 获取显示模式，确保自动响应变化
+    private var currentDisplayMode: WallpaperDisplayMode {
+        userDefaults.displayMode
     }
 
     var body: some View {
@@ -93,11 +94,13 @@ struct WallpaperImageView: View {
         .onAppear {
             loadImage()
         }
+        // 当显示模式改变时强制重新渲染整个视图
+        .id("image_\(wallpaper.id)_\(userDefaults.displayMode.rawValue)")
     }
 
     /// 背景色
     private var backgroundColor: Color {
-        switch displayMode {
+        switch currentDisplayMode {
         case .fitBlack:
             return .black
         case .fitWhite:
@@ -110,9 +113,7 @@ struct WallpaperImageView: View {
     /// 根据显示模式渲染图片
     @ViewBuilder
     private func displayModeView(for image: UIImage, geometry: GeometryProxy, isLandscape: Bool) -> some View {
-        let currentMode = displayMode
-
-        switch displayMode {
+        switch currentDisplayMode {
         case .fitBlack, .fitWhite:
             // 适配模式：完整显示图片
             if isLandscape {
