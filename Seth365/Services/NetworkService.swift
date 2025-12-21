@@ -119,7 +119,7 @@ actor NetworkService {
         return image
     }
 
-    /// 下载壁纸（使用缓存）
+    /// 下载壁纸（添加时间戳绕过 CDN 缓存）
     /// - Parameter wallpaper: 壁纸模型
     /// - Returns: UIImage
     func downloadWallpaper(_ wallpaper: Wallpaper) async throws -> UIImage {
@@ -127,7 +127,23 @@ actor NetworkService {
             throw NetworkError.invalidURL
         }
 
-        return try await downloadImage(from: url)
+        // 添加时间戳绕过 CDN 缓存（R2 更新后 CDN 可能返回旧版本）
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            throw NetworkError.invalidURL
+        }
+
+        let timestamp = String(Int(Date().timeIntervalSince1970))
+        let cacheBuster = URLQueryItem(name: "t", value: timestamp)
+        var existingItems = components.queryItems ?? []
+        existingItems.append(cacheBuster)
+        components.queryItems = existingItems
+
+        guard let bustURL = components.url else {
+            throw NetworkError.invalidURL
+        }
+
+        print("🌐 下载壁纸: \(bustURL.absoluteString)")
+        return try await downloadImage(from: bustURL)
     }
 
     /// 强制下载壁纸（忽略缓存）

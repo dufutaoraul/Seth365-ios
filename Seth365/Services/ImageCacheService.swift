@@ -169,8 +169,18 @@ actor ImageCacheService {
             return false
         }
 
+        // 添加时间戳绕过 CDN 缓存
+        guard var components = URLComponents(url: remoteURL, resolvingAgainstBaseURL: false) else {
+            return false
+        }
+        let timestamp = String(Int(Date().timeIntervalSince1970))
+        components.queryItems = (components.queryItems ?? []) + [URLQueryItem(name: "t", value: timestamp)]
+        guard let bustURL = components.url else {
+            return false
+        }
+
         // 使用 HEAD 请求检查远程文件
-        var request = URLRequest(url: remoteURL)
+        var request = URLRequest(url: bustURL)
         request.httpMethod = "HEAD"
         request.timeoutInterval = 10
 
@@ -272,7 +282,13 @@ actor ImageCacheService {
     }
 
     private func saveRemoteMetadata(from url: URL, for key: String) async {
-        var request = URLRequest(url: url)
+        // 添加时间戳绕过 CDN 缓存
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+        let timestamp = String(Int(Date().timeIntervalSince1970))
+        components.queryItems = (components.queryItems ?? []) + [URLQueryItem(name: "t", value: timestamp)]
+        guard let bustURL = components.url else { return }
+
+        var request = URLRequest(url: bustURL)
         request.httpMethod = "HEAD"
         request.timeoutInterval = 10
 
