@@ -264,6 +264,8 @@ struct SettingsView: View {
 
     // MARK: - 显示模式选择器
 
+    @State private var showDisplayModeApplied = false
+
     private var displayModePicker: some View {
         VStack(alignment: .leading, spacing: 12) {
             Picker("显示模式", selection: $userDefaults.displayMode) {
@@ -277,6 +279,28 @@ struct SettingsView: View {
                 .frame(height: 200)
                 .cornerRadius(12)
                 .id("preview_\(userDefaults.displayMode.rawValue)")
+
+            // 确认应用按钮
+            Button(action: {
+                // 发送通知让其他视图刷新
+                NotificationCenter.default.post(name: .displayModeChanged, object: nil)
+                showDisplayModeApplied = true
+            }) {
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                    Text("应用此显示模式")
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .alert("已应用", isPresented: $showDisplayModeApplied) {
+                Button("好的") { }
+            } message: {
+                Text("显示模式已更改为「\(userDefaults.displayMode.displayName)」，所有壁纸将以此模式显示。")
+            }
         }
     }
 

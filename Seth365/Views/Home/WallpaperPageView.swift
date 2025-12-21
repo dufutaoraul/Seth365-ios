@@ -7,12 +7,19 @@
 
 import SwiftUI
 
+// MARK: - 通知名称
+
+extension Notification.Name {
+    static let displayModeChanged = Notification.Name("displayModeChanged")
+}
+
 /// 壁纸大图轮播组件
 struct WallpaperPageView: View {
     let wallpapers: [Wallpaper]
     @Binding var currentIndex: Int
     var onTap: (() -> Void)?
     @ObservedObject private var userDefaults = UserDefaultsManager.shared
+    @State private var refreshID = UUID()
 
     var body: some View {
         TabView(selection: $currentIndex) {
@@ -23,8 +30,12 @@ struct WallpaperPageView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(maxHeight: .infinity)
-        // 当显示模式改变时强制整个 TabView 重新渲染
-        .id("wallpaper_page_\(userDefaults.displayMode.rawValue)")
+        // 当显示模式改变或收到刷新通知时重新渲染
+        .id("wallpaper_page_\(userDefaults.displayMode.rawValue)_\(refreshID)")
+        .onReceive(NotificationCenter.default.publisher(for: .displayModeChanged)) { _ in
+            // 收到通知时强制刷新
+            refreshID = UUID()
+        }
     }
 }
 
