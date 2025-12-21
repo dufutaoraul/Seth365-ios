@@ -51,20 +51,45 @@ class WallpaperPreloadService: ObservableObject {
 
         // 1. 获取远程配置
         let config = await WallpaperConfigService.shared.fetchConfig()
-        appLog(.info, "远程配置: version=\(config.version), range=\(config.startDate)~\(config.endDate)", source: "Preload")
 
         // 2. 检查版本号
         let localVersion = UserDefaultsManager.shared.wallpaperVersion
-        appLog(.info, "本地版本: \(localVersion)", source: "Preload")
+
+        // ========== 关键调试信息 ==========
+        print("==============================================")
+        print("🔴 壁纸同步诊断信息")
+        print("==============================================")
+        print("🔴 本地版本号: \(localVersion)")
+        print("🔴 远程版本号: \(config.version)")
+        print("🔴 日期范围: \(config.startDate) ~ \(config.endDate)")
+
+        // 检查缓存目录
+        let cacheDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        let wallpaperCacheDir = cacheDir.appendingPathComponent("WallpaperCache")
+        print("🔴 缓存目录: \(wallpaperCacheDir.path)")
+
+        // 检查缓存目录是否存在及文件数量
+        if FileManager.default.fileExists(atPath: wallpaperCacheDir.path) {
+            let files = (try? FileManager.default.contentsOfDirectory(atPath: wallpaperCacheDir.path)) ?? []
+            print("🔴 缓存目录存在，包含 \(files.count) 个文件")
+            if files.count > 0 && files.count <= 10 {
+                print("🔴 文件列表: \(files)")
+            } else if files.count > 10 {
+                print("🔴 前10个文件: \(Array(files.prefix(10)))")
+            }
+        } else {
+            print("🔴 缓存目录不存在!")
+        }
+        print("==============================================")
 
         if config.version == localVersion && localVersion > 0 {
-            appLog(.info, "壁纸版本相同 (v\(localVersion))，跳过同步", source: "Preload")
+            print("🟢 版本相同，跳过同步")
             statusMessage = "壁纸已是最新版本"
             isLoading = false
             return
         }
 
-        appLog(.info, "壁纸版本不同: 本地=\(localVersion), 远程=\(config.version)，开始检查缓存", source: "Preload")
+        print("🟡 版本不同，开始检查缓存...")
 
         // 3. 根据配置生成壁纸列表
         let allWallpapers = generateWallpaperList(from: config)
