@@ -16,6 +16,7 @@
 "common.all" = "全部";
 
 // MARK: - 主标签栏
+"tab.home" = "首页";
 "tab.calendar" = "日历";
 "tab.today" = "今日";
 "tab.settings" = "设置";

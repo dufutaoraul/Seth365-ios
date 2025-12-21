@@ -16,6 +16,7 @@
 "common.all" = "All";
 
 // MARK: - Main Tab Bar
+"tab.home" = "Home";
 "tab.calendar" = "Calendar";
 "tab.today" = "Today";
 "tab.settings" = "Settings";
