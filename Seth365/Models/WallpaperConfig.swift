@@ -63,8 +63,8 @@ class WallpaperConfigService {
     /// 共享实例
     static let shared = WallpaperConfigService()
 
-    /// iOS 配置文件 URL
-    private let configURL = "https://pub-810d6e0711de44d396071ecfc5ae9c2a.r2.dev/ios/wallpaper-config.json"
+    /// 配置文件 URL（所有平台共用）
+    private let configURL = "https://pub-810d6e0711de44d396071ecfc5ae9c2a.r2.dev/wallpaper-config.json"
 
     private init() {}
 
