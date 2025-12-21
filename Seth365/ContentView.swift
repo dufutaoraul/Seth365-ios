@@ -17,13 +17,23 @@ struct ContentView: View {
         ZStack {
             // 主内容
             TabView(selection: $selectedTab) {
-                // 首页（日历+轮播一体化）
-                HomeView()
+                // 日历页面
+                CalendarView()
                     .tabItem {
-                        Image(systemName: "house.fill")
-                        Text(LocalizedStringKey("tab.home"))
+                        Image(systemName: "calendar")
+                        Text(LocalizedStringKey("tab.calendar"))
                     }
                     .tag(0)
+
+                // 今日壁纸页面
+                NavigationStack {
+                    WallpaperListView(date: Date())
+                }
+                .tabItem {
+                    Image(systemName: "photo.on.rectangle")
+                    Text(LocalizedStringKey("tab.today"))
+                }
+                .tag(1)
 
                 // 设置页面
                 SettingsView()
@@ -31,7 +41,7 @@ struct ContentView: View {
                         Image(systemName: "gearshape")
                         Text(LocalizedStringKey("tab.settings"))
                     }
-                    .tag(1)
+                    .tag(2)
             }
             .opacity(showSplash ? 0 : 1)
 

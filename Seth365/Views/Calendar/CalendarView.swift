@@ -60,13 +60,12 @@ struct CalendarView: View {
     /// 月份切换控制
     private var monthSwitcher: some View {
         HStack {
-            // 上一月按钮
+            // 上一月按钮（始终可点击，不可切换时显示提示）
             Button(action: { viewModel.previousMonth() }) {
                 Image(systemName: "chevron.left")
                     .font(.title3)
                     .foregroundColor(viewModel.canGoPrevious ? .primary : .gray.opacity(0.3))
             }
-            .disabled(!viewModel.canGoPrevious)
 
             Spacer()
 
@@ -77,13 +76,12 @@ struct CalendarView: View {
 
             Spacer()
 
-            // 下一月按钮
+            // 下一月按钮（始终可点击，不可切换时显示提示）
             Button(action: { viewModel.nextMonth() }) {
                 Image(systemName: "chevron.right")
                     .font(.title3)
                     .foregroundColor(viewModel.canGoNext ? .primary : .gray.opacity(0.3))
             }
-            .disabled(!viewModel.canGoNext)
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 16)
