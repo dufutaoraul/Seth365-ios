@@ -208,8 +208,8 @@
 
 // MARK: - 下载确认弹窗
 "download.alert.title" = "下载壁纸资源";
-"download.alert.message" = "发现 %d 张新壁纸可供下载（约 %@）。\n\n⚠️ 不下载将无法使用自动换壁纸功能\n\n建议在 WiFi 环境下下载。";
-"download.alert.download_now" = "立即下载（推荐）";
+"download.alert.message" = "发现 %d 张新壁纸可供下载（约 %@）。\n\n⚠️ 不下载将无法查看和使用这些壁纸\n\n建议连接 WiFi 后下载。";
+"download.alert.download_now" = "立即下载";
 "download.alert.later" = "暂不下载";
 
 // MARK: - 日历导航提示

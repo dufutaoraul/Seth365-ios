@@ -208,8 +208,8 @@
 
 // MARK: - Download Confirmation Alert
 "download.alert.title" = "Download Wallpapers";
-"download.alert.message" = "Found %d new wallpapers available (approximately %@).\n\n⚠️ Auto wallpaper change won't work without downloading\n\nWiFi connection recommended.";
-"download.alert.download_now" = "Download Now (Recommended)";
+"download.alert.message" = "Found %d new wallpapers available (approximately %@).\n\n⚠️ You won't be able to view or use these wallpapers without downloading\n\nWiFi connection recommended.";
+"download.alert.download_now" = "Download Now";
 "download.alert.later" = "Not Now";
 
 // MARK: - Calendar Navigation Hints
