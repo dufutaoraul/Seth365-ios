@@ -206,6 +206,12 @@
 "download.progress" = "Downloaded";
 "download.warning" = "Don't close the app";
 
+// MARK: - Download Confirmation Alert
+"download.alert.title" = "Download Additional Resources";
+"download.alert.message" = "Need to download %d wallpapers (approximately %@) for full experience.\n\nWiFi connection recommended.";
+"download.alert.download_now" = "Download Now";
+"download.alert.later" = "Later";
+
 // MARK: - Calendar Navigation Hints
 "calendar.nav.past" = "The past is past, let's focus on the present!";
 "calendar.nav.future" = "Future wallpapers are on the way, stay tuned!";

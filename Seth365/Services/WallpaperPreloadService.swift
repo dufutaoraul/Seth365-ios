@@ -125,6 +125,47 @@ class WallpaperPreloadService: ObservableObject {
         isLoading = false
     }
 
+    // MARK: - 检查待下载资源
+
+    /// 检查待下载的壁纸数量和大小（不实际下载）
+    /// - Returns: (count: 待下载数量, size: 估算大小字符串)
+    @MainActor
+    func checkPendingDownloads() async -> (count: Int, size: String) {
+        // 1. 获取远程配置
+        let config = await WallpaperConfigService.shared.fetchConfig()
+
+        // 2. 检查版本号
+        let localVersion = UserDefaultsManager.shared.wallpaperVersion
+
+        if config.version == localVersion && localVersion > 0 {
+            // 版本相同，无需下载
+            return (0, "0 MB")
+        }
+
+        // 3. 根据配置生成壁纸列表
+        let allWallpapers = generateWallpaperList(from: config)
+
+        // 4. 计算需要下载的壁纸数量
+        let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle && !isCached($0) }
+        let count = wallpapersToDownload.count
+
+        if count == 0 {
+            return (0, "0 MB")
+        }
+
+        // 5. 估算下载大小（每张壁纸平均约 150KB）
+        let estimatedKB = count * 150
+        let sizeString: String
+        if estimatedKB >= 1024 {
+            let mb = Double(estimatedKB) / 1024.0
+            sizeString = String(format: "%.1f MB", mb)
+        } else {
+            sizeString = "\(estimatedKB) KB"
+        }
+
+        return (count, sizeString)
+    }
+
     // MARK: - 辅助方法
 
     /// 根据配置生成壁纸列表

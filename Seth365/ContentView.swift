@@ -11,6 +11,8 @@ struct ContentView: View {
     @State private var selectedTab = 0
     @State private var isReady = false
     @State private var showSplash = true
+    @State private var showDownloadAlert = false
+    @State private var pendingDownloadInfo: (count: Int, size: String)? = nil
     @StateObject private var preloadService = WallpaperPreloadService.shared
 
     var body: some View {
@@ -62,10 +64,36 @@ struct ContentView: View {
                 withAnimation(.easeInOut(duration: 0.5)) {
                     showSplash = false
                 }
-                // 启动后开始下载非内置壁纸
+                // 检查是否需要下载额外资源
+                Task {
+                    await checkForDownloads()
+                }
+            }
+        }
+        .alert("download.alert.title".localized, isPresented: $showDownloadAlert) {
+            Button("download.alert.download_now".localized) {
                 Task {
                     await preloadService.preloadWallpapers()
                 }
+            }
+            Button("download.alert.later".localized, role: .cancel) {
+                // 用户选择稍后下载，不执行任何操作
+            }
+        } message: {
+            if let info = pendingDownloadInfo {
+                Text(String(format: "download.alert.message".localized, info.count, info.size))
+            }
+        }
+    }
+
+    /// 检查是否需要下载额外资源
+    private func checkForDownloads() async {
+        let downloadInfo = await preloadService.checkPendingDownloads()
+
+        if downloadInfo.count > 0 {
+            await MainActor.run {
+                pendingDownloadInfo = downloadInfo
+                showDownloadAlert = true
             }
         }
     }
