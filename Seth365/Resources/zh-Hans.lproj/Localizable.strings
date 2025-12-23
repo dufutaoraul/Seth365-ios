@@ -207,10 +207,10 @@
 "download.warning" = "请勿关闭App";
 
 // MARK: - 下载确认弹窗
-"download.alert.title" = "下载额外资源";
-"download.alert.message" = "需要下载 %d 张壁纸（约 %@）以获得完整体验。\n\n建议在 WiFi 环境下下载。";
-"download.alert.download_now" = "立即下载";
-"download.alert.later" = "稍后下载";
+"download.alert.title" = "下载壁纸资源";
+"download.alert.message" = "发现 %d 张新壁纸可供下载（约 %@）。\n\n⚠️ 不下载将无法使用自动换壁纸功能\n\n建议在 WiFi 环境下下载。";
+"download.alert.download_now" = "立即下载（推荐）";
+"download.alert.later" = "暂不下载";
 
 // MARK: - 日历导航提示
 "calendar.nav.past" = "过去的就让它过去吧，精彩从现在开始～";

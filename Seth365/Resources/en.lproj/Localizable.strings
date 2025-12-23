@@ -207,10 +207,10 @@
 "download.warning" = "Don't close the app";
 
 // MARK: - Download Confirmation Alert
-"download.alert.title" = "Download Additional Resources";
-"download.alert.message" = "Need to download %d wallpapers (approximately %@) for full experience.\n\nWiFi connection recommended.";
-"download.alert.download_now" = "Download Now";
-"download.alert.later" = "Later";
+"download.alert.title" = "Download Wallpapers";
+"download.alert.message" = "Found %d new wallpapers available (approximately %@).\n\n⚠️ Auto wallpaper change won't work without downloading\n\nWiFi connection recommended.";
+"download.alert.download_now" = "Download Now (Recommended)";
+"download.alert.later" = "Not Now";
 
 // MARK: - Calendar Navigation Hints
 "calendar.nav.past" = "The past is past, let's focus on the present!";
