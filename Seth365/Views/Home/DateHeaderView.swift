@@ -16,13 +16,30 @@ struct DateHeaderView: View {
     let canGoPrev: Bool
     let canGoNext: Bool
 
+    /// 根据设备类型返回合适的按钮大小
+    private var navButtonSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
+    }
+
+    /// 根据设备类型返回合适的图标字体
+    private var navIconFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .title2 : .title3
+    }
+
+    /// 根据设备类型返回合适的标题字体
+    private var titleFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .title : .title2
+    }
+
     var body: some View {
         HStack {
             // 上一月按钮
             Button(action: onPrevMonth) {
                 Image(systemName: "chevron.left")
-                    .font(.title3)
+                    .font(navIconFont)
                     .foregroundColor(canGoPrev ? .primary : .gray.opacity(0.3))
+                    .frame(width: navButtonSize, height: navButtonSize)
+                    .contentShape(Rectangle())
             }
             .disabled(!canGoPrev)
 
@@ -36,14 +53,16 @@ struct DateHeaderView: View {
             }) {
                 HStack(spacing: 8) {
                     Text(DateUtils.formatYearMonth(currentMonth))
-                        .font(.title2)
+                        .font(titleFont)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
 
                     Image(systemName: showCalendar ? "chevron.up" : "chevron.down")
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
+                .frame(minHeight: navButtonSize)
+                .contentShape(Rectangle())
             }
 
             Spacer()
@@ -51,13 +70,15 @@ struct DateHeaderView: View {
             // 下一月按钮
             Button(action: onNextMonth) {
                 Image(systemName: "chevron.right")
-                    .font(.title3)
+                    .font(navIconFont)
                     .foregroundColor(canGoNext ? .primary : .gray.opacity(0.3))
+                    .frame(width: navButtonSize, height: navButtonSize)
+                    .contentShape(Rectangle())
             }
             .disabled(!canGoNext)
         }
         .padding(.horizontal, 24)
-        .padding(.vertical, 12)
+        .padding(.vertical, 8)
         .background(Color(UIColor.systemBackground))
     }
 }

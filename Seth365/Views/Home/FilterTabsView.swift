@@ -61,19 +61,35 @@ struct HomeFilterChip: View {
     let isSelected: Bool
     let action: () -> Void
 
+    /// 根据设备类型返回合适的字体
+    private var chipFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .subheadline : .caption
+    }
+
+    /// 根据设备类型返回合适的水平 padding
+    private var horizontalPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 18 : 14
+    }
+
+    /// 根据设备类型返回合适的垂直 padding
+    private var verticalPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10
+    }
+
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.caption)
+                .font(chipFont)
                 .fontWeight(isSelected ? .semibold : .regular)
                 .foregroundColor(isSelected ? .white : .primary)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .padding(.horizontal, horizontalPadding)
+                .padding(.vertical, verticalPadding)
                 .background(
                     Capsule()
                         .fill(isSelected ? Color.blue : Color.gray.opacity(0.15))
                 )
         }
+        .frame(minHeight: 44) // 确保最小触摸区域
     }
 }
 

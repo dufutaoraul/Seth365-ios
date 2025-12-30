@@ -63,6 +63,26 @@ struct CalendarDayCell: View {
     let isSelected: Bool
     let onTap: () -> Void
 
+    /// 根据设备类型返回合适的尺寸
+    private var cellSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
+    }
+
+    /// 根据设备类型返回合适的字体大小
+    private var fontSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 18 : 16
+    }
+
+    /// 锁定状态的图标大小
+    private var lockIconSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10
+    }
+
+    /// 锁定状态的字体大小
+    private var lockFontSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 14 : 12
+    }
+
     var body: some View {
         Button(action: onTap) {
             ZStack {
@@ -84,30 +104,30 @@ struct CalendarDayCell: View {
                     switch item.cellState {
                     case .unlocked:
                         Text("\(dayNumber)")
-                            .font(.system(size: 14, weight: isSelected ? .bold : .regular))
+                            .font(.system(size: fontSize, weight: isSelected ? .bold : .regular))
                             .foregroundColor(isSelected ? .white : .primary)
 
                     case .locked:
-                        VStack(spacing: 1) {
+                        VStack(spacing: 2) {
                             Image(systemName: "lock.fill")
-                                .font(.system(size: 8))
+                                .font(.system(size: lockIconSize))
                             Text("\(dayNumber)")
-                                .font(.system(size: 10))
+                                .font(.system(size: lockFontSize))
                         }
                         .foregroundColor(.gray.opacity(0.5))
 
                     case .test:
-                        VStack(spacing: 1) {
+                        VStack(spacing: 2) {
                             Image(systemName: "nosign")
-                                .font(.system(size: 8))
+                                .font(.system(size: lockIconSize))
                             Text("\(dayNumber)")
-                                .font(.system(size: 10))
+                                .font(.system(size: lockFontSize))
                         }
                         .foregroundColor(.gray.opacity(0.3))
                     }
                 }
             }
-            .frame(width: 36, height: 36)
+            .frame(minWidth: cellSize, minHeight: cellSize)
         }
         .disabled(item.isPlaceholder || item.cellState == .test)
     }

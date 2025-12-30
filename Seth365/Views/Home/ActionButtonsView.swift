@@ -14,6 +14,21 @@ struct ActionButtonsView: View {
     let onPoster: () -> Void
     var onSetWallpaper: (() -> Void)?
 
+    /// 根据设备类型返回合适的按钮高度
+    private var buttonHeight: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
+    }
+
+    /// 根据设备类型返回合适的字体
+    private var buttonFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .body.weight(.semibold) : .subheadline.weight(.semibold)
+    }
+
+    /// 根据设备类型返回合适的圆角
+    private var buttonCornerRadius: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10
+    }
+
     var body: some View {
         VStack(spacing: 12) {
             // 第一行：保存和海报按钮
@@ -24,12 +39,12 @@ struct ActionButtonsView: View {
                         Image(systemName: "square.and.arrow.down")
                         Text("wallpaper.detail.save".localized)
                     }
-                    .font(.subheadline.weight(.semibold))
+                    .font(buttonFont)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .frame(height: buttonHeight)
                     .background(Color.blue)
-                    .cornerRadius(10)
+                    .cornerRadius(buttonCornerRadius)
                 }
                 .disabled(wallpaper == nil)
 
@@ -39,12 +54,12 @@ struct ActionButtonsView: View {
                         Image(systemName: "doc.richtext")
                         Text("wallpaper.detail.poster".localized)
                     }
-                    .font(.subheadline.weight(.semibold))
+                    .font(buttonFont)
                     .foregroundColor(.blue)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .frame(height: buttonHeight)
                     .background(Color.blue.opacity(0.1))
-                    .cornerRadius(10)
+                    .cornerRadius(buttonCornerRadius)
                 }
                 .disabled(wallpaper == nil)
             }
@@ -56,12 +71,12 @@ struct ActionButtonsView: View {
                         Image(systemName: "photo.on.rectangle")
                         Text("wallpaper.save.go_set".localized)
                     }
-                    .font(.subheadline.weight(.semibold))
+                    .font(buttonFont)
                     .foregroundColor(.orange)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
+                    .frame(height: buttonHeight)
                     .background(Color.orange.opacity(0.1))
-                    .cornerRadius(10)
+                    .cornerRadius(buttonCornerRadius)
                 }
                 .disabled(wallpaper == nil)
             }
@@ -108,16 +123,35 @@ struct InfoTag: View {
     let icon: String
     let text: String
 
+    /// 根据设备类型返回合适的图标字体
+    private var iconFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .caption : .caption2
+    }
+
+    /// 根据设备类型返回合适的文字字体
+    private var textFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .subheadline : .caption
+    }
+
+    /// 根据设备类型返回合适的 padding
+    private var horizontalPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 12 : 8
+    }
+
+    private var verticalPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 8 : 4
+    }
+
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.caption2)
+                .font(iconFont)
             Text(text)
-                .font(.caption)
+                .font(textFont)
         }
         .foregroundColor(.secondary)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .padding(.horizontal, horizontalPadding)
+        .padding(.vertical, verticalPadding)
         .background(Color.gray.opacity(0.1))
         .cornerRadius(6)
     }
