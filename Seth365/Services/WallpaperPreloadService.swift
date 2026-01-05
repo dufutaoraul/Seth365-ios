@@ -153,14 +153,14 @@ class WallpaperPreloadService: ObservableObject {
             return (0, "0 MB")
         }
 
-        // 5. 估算下载大小（每张壁纸平均约 150KB）
-        let estimatedKB = count * 150
+        // 5. 估算下载大小（每张高清壁纸平均约 1.5MB）
+        let estimatedMB = Double(count) * 1.5
         let sizeString: String
-        if estimatedKB >= 1024 {
-            let mb = Double(estimatedKB) / 1024.0
-            sizeString = String(format: "%.1f MB", mb)
+        if estimatedMB >= 1024 {
+            let gb = estimatedMB / 1024.0
+            sizeString = String(format: "%.1f GB", gb)
         } else {
-            sizeString = "\(estimatedKB) KB"
+            sizeString = String(format: "%.0f MB", estimatedMB)
         }
 
         return (count, sizeString)
