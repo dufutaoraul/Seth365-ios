@@ -314,34 +314,53 @@ struct SettingsView: View {
 
     // MARK: - 二维码行
 
+    /// 根据设备类型返回合适的二维码预览尺寸
+    private var qrCodePreviewSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 80 : 50
+    }
+
     private var qrCodeRow: some View {
-        HStack {
-            // 二维码预览
-            if let qrCode = userQRCode {
-                Image(uiImage: qrCode)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 50, height: 50)
-                    .cornerRadius(6)
-            } else {
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 50, height: 50)
-                    .overlay(
-                        Image(systemName: "qrcode")
-                            .font(.title3)
-                            .foregroundColor(.gray)
-                    )
-            }
+        Button(action: { showQRCodePicker = true }) {
+            HStack {
+                // 二维码预览
+                if let qrCode = userQRCode {
+                    Image(uiImage: qrCode)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: qrCodePreviewSize, height: qrCodePreviewSize)
+                        .cornerRadius(8)
+                } else {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: qrCodePreviewSize, height: qrCodePreviewSize)
+                        .overlay(
+                            Image(systemName: "qrcode")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                        )
+                }
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(userQRCode != nil ? "settings.qr.set".localized : "settings.qr.not_set".localized)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-            }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(userQRCode != nil ? "settings.qr.set".localized : "settings.qr.not_set".localized)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
 
-            Spacer()
+                    Text("点击更换二维码")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .frame(minHeight: 44) // 确保最小触摸目标
+            .contentShape(Rectangle()) // 扩大点击区域
         }
+        .buttonStyle(.plain)
     }
 }
 

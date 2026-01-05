@@ -37,6 +37,11 @@ struct PosterEditorView: View {
     @State private var imageDisplayOrigin: CGPoint = .zero
     @State private var containerSize: CGSize = .zero // 容器尺寸
 
+    /// 根据设备类型返回合适的二维码显示尺寸
+    private var qrCodeDisplaySize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 70 : 50
+    }
+
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
@@ -358,59 +363,67 @@ struct PosterEditorView: View {
 
     private var controlArea: some View {
         VStack(spacing: 12) {
-            // 二维码状态
-            HStack {
-                if let qrCode = viewModel.userQRCode {
-                    Image(uiImage: qrCode)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 50, height: 50)
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.green, lineWidth: 2)
-                        )
+            // 二维码状态（整行可点击更换二维码）
+            Button(action: { showQRCodePicker = true }) {
+                HStack {
+                    if let qrCode = viewModel.userQRCode {
+                        Image(uiImage: qrCode)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: qrCodeDisplaySize, height: qrCodeDisplaySize)
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.green, lineWidth: 2)
+                            )
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("已设置二维码")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        Text("拖动红框调整位置，捏合调整大小")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                } else {
-                    Button(action: { showQRCodePicker = true }) {
-                        HStack {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: 50, height: 50)
-                                .overlay(
-                                    Image(systemName: "qrcode")
-                                        .foregroundColor(.gray)
-                                )
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("已设置二维码")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.primary)
+                            Text("拖动红框调整位置，捏合调整大小")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text("点击更换二维码")
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                        }
+                    } else {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: qrCodeDisplaySize, height: qrCodeDisplaySize)
+                            .overlay(
+                                Image(systemName: "qrcode")
+                                    .foregroundColor(.gray)
+                            )
 
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("未设置二维码")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.red)
-                                HStack(spacing: 4) {
-                                    Text("点击上传二维码")
-                                        .font(.caption)
-                                        .foregroundColor(.blue)
-                                    Image(systemName: "chevron.right")
-                                        .font(.caption2)
-                                        .foregroundColor(.blue)
-                                }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("未设置二维码")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.red)
+                            HStack(spacing: 4) {
+                                Text("点击上传二维码")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                                Image(systemName: "chevron.right")
+                                    .font(.caption2)
+                                    .foregroundColor(.blue)
                             }
                         }
                     }
-                    .buttonStyle(.plain)
-                }
 
-                Spacer()
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(minHeight: 44) // 确保最小触摸目标
+                .contentShape(Rectangle()) // 扩大点击区域
             }
+            .buttonStyle(.plain)
             .padding(.horizontal)
 
             // 检测状态提示
