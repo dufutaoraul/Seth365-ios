@@ -18,6 +18,11 @@ struct SettingsView: View {
     @State private var userQRCode: UIImage? = QRCodeStorage.shared.getUserQRCode()
     @State private var showDeleteQRCodeAlert = false
 
+    /// 刷新二维码状态（从存储重新加载）
+    private func refreshQRCodeState() {
+        userQRCode = QRCodeStorage.shared.getUserQRCode()
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -275,6 +280,10 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("settings.qr.delete.message".localized)
+            }
+            .onAppear {
+                // 每次页面出现时刷新二维码状态，确保与其他页面同步
+                refreshQRCodeState()
             }
         }
     }

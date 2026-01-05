@@ -94,6 +94,11 @@ class PosterViewModel: ObservableObject {
         QRCodeStorage.shared.saveUserQRCode(image)
     }
 
+    /// 重新加载用户二维码（从存储同步）
+    func reloadUserQRCode() {
+        userQRCode = QRCodeStorage.shared.getUserQRCode()
+    }
+
     // MARK: - 更新位置和大小
 
     /// 更新二维码位置

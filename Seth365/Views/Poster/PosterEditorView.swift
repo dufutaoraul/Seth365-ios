@@ -132,6 +132,9 @@ struct PosterEditorView: View {
                 }
             }
             .task {
+                // 重新加载用户二维码，确保与存储同步
+                viewModel.reloadUserQRCode()
+
                 await viewModel.setWallpaper(wallpaperImage)
                 // 检测完成后初始化边框位置
                 await MainActor.run {
