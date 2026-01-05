@@ -426,16 +426,16 @@ struct PosterEditorView: View {
             .buttonStyle(.plain)
             .padding(.horizontal)
 
-            // 检测状态提示
+            // 检测状态提示（指壁纸原图中的二维码，不是用户上传的二维码）
             HStack {
                 if viewModel.hasDetectedQRCode {
-                    Label("已识别到原图二维码位置", systemImage: "checkmark.circle.fill")
+                    Label("已识别壁纸中的二维码位置", systemImage: "checkmark.circle.fill")
                         .font(.caption)
                         .foregroundColor(.green)
                 } else if !viewModel.isDetecting {
-                    Label("未识别到二维码，使用默认位置", systemImage: "info.circle")
+                    Label("壁纸中无二维码，将放置在默认位置", systemImage: "info.circle")
                         .font(.caption)
-                        .foregroundColor(.orange)
+                        .foregroundColor(.secondary)
                 }
                 Spacer()
             }
