@@ -66,10 +66,18 @@ class WallpaperPreloadService: ObservableObject {
         appLog(.info, "配置日期范围: \(config.startDate) ~ \(config.endDate)，共 \(allWallpapers.count) 张", source: "Preload")
 
         // 4. 检查哪些需要下载
-        // 先打印缓存目录路径（调试用）
-        let sampleWallpaper = allWallpapers.first!
-        let cachePath = ImageCacheService.shared.cacheURL(for: sampleWallpaper).deletingLastPathComponent().path
-        appLog(.debug, "缓存目录: \(cachePath)", source: "Preload")
+        // 检查是否有壁纸
+        guard !allWallpapers.isEmpty else {
+            statusMessage = "没有可用的壁纸"
+            isLoading = false
+            return
+        }
+
+        // 打印缓存目录路径（调试用）
+        if let sampleWallpaper = allWallpapers.first {
+            let cachePath = ImageCacheService.shared.cacheURL(for: sampleWallpaper).deletingLastPathComponent().path
+            appLog(.debug, "缓存目录: \(cachePath)", source: "Preload")
+        }
 
         let bundledWallpapers = allWallpapers.filter { $0.isInBundle }
         let cachedWallpapers = allWallpapers.filter { !$0.isInBundle && isCached($0) }
