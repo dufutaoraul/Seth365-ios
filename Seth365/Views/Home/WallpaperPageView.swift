@@ -64,12 +64,14 @@ struct WallpaperImageView: View {
                     if wallpaper.orientation == .landscape {
                         // 横版壁纸旋转90度显示
                         displayModeView(for: image, geometry: geometry, isLandscape: true)
+                            .contentShape(Rectangle()) // 确保整个区域可点击
                             .onTapGesture {
                                 onTap?()
                             }
                     } else {
                         // 竖版壁纸正常显示
                         displayModeView(for: image, geometry: geometry, isLandscape: false)
+                            .contentShape(Rectangle()) // 确保整个区域可点击
                             .onTapGesture {
                                 onTap?()
                             }

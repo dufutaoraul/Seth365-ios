@@ -114,14 +114,24 @@ struct WallpaperDetailView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark")
+                            .font(.body.weight(.semibold))
                             .foregroundColor(.white)
+                            .frame(width: 32, height: 32)
+                            .background(Color.black.opacity(0.5))
+                            .clipShape(Circle())
                     }
+                    .frame(minWidth: 44, minHeight: 44) // 确保触摸目标足够大
                 }
 
                 ToolbarItem(placement: .principal) {
                     Text(wallpaper.displayName)
                         .font(.subheadline)
+                        .fontWeight(.medium)
                         .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.black.opacity(0.5))
+                        .cornerRadius(8)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
