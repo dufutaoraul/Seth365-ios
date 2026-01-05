@@ -14,6 +14,13 @@ struct WallpaperCard: View {
     let isLoading: Bool
     let onTap: () -> Void
 
+    /// 根据设备类型返回合适的卡片高度
+    private var cardHeight: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad
+            ? Constants.UI.wallpaperCardHeight * 1.3
+            : Constants.UI.wallpaperCardHeight
+    }
+
     var body: some View {
         Button(action: onTap) {
             ZStack {
@@ -26,7 +33,7 @@ struct WallpaperCard: View {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(height: Constants.UI.wallpaperCardHeight)
+                        .frame(height: cardHeight)
                         .clipped()
                         .cornerRadius(Constants.UI.cornerRadius)
                 } else if isLoading {
@@ -57,7 +64,8 @@ struct WallpaperCard: View {
                     }
                 }
             }
-            .frame(height: Constants.UI.wallpaperCardHeight)
+            .frame(height: cardHeight)
+            .contentShape(Rectangle()) // 确保整个卡片区域可点击
         }
         .buttonStyle(PlainButtonStyle())
     }

@@ -95,7 +95,9 @@ struct ThumbnailItem: View {
                 }
             }
             .cornerRadius(cornerRadius)
+            .contentShape(Rectangle()) // 确保整个缩略图区域可点击
         }
+        .buttonStyle(PlainButtonStyle())
         .frame(minWidth: 44, minHeight: 44) // 确保最小触摸区域
         .onAppear {
             loadThumbnail()
