@@ -134,9 +134,9 @@ struct FilterChip: View {
         }
         .foregroundColor(isSelected ? .white : .primary)
         .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .frame(minHeight: 44) // 确保最小触摸目标 44pt
         .background(isSelected ? Constants.Colors.primary : Color.gray.opacity(0.15))
-        .cornerRadius(16)
+        .cornerRadius(22) // 调整圆角适应新高度
     }
 }
 

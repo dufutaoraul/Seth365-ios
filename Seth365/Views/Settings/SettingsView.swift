@@ -178,7 +178,7 @@ struct SettingsView: View {
                                     .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
+                            .frame(minHeight: 44) // 确保最小触摸目标 44pt
                             .background(Color.green)
                             .foregroundColor(.white)
                             .cornerRadius(8)

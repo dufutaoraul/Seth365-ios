@@ -183,7 +183,7 @@ struct ShortcutsGuideView: View {
                 .fontWeight(userDefaults.switchDateRange == range ? .semibold : .regular)
                 .foregroundColor(userDefaults.switchDateRange == range ? .white : .primary)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 10)
+                .frame(minHeight: 44) // 确保最小触摸目标 44pt
                 .background(userDefaults.switchDateRange == range ? Color.blue : Color.gray.opacity(0.15))
                 .cornerRadius(8)
         }

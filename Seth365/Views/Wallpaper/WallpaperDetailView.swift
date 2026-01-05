@@ -80,7 +80,8 @@ struct WallpaperDetailView: View {
                                     .font(.caption)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
+                            .frame(minHeight: 60) // 确保足够的触摸区域
+                            .contentShape(Rectangle())
                         }
                         .disabled(isSaving)
                         .foregroundColor(.white)
@@ -99,7 +100,8 @@ struct WallpaperDetailView: View {
                                     .font(.caption)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
+                            .frame(minHeight: 60) // 确保足够的触摸区域
+                            .contentShape(Rectangle())
                         }
                         .foregroundColor(.white)
                     }

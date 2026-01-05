@@ -147,10 +147,10 @@ private struct LogFilterChip: View {
                 .font(.caption)
                 .fontWeight(isSelected ? .semibold : .regular)
                 .padding(.horizontal, 12)
-                .padding(.vertical, 6)
+                .frame(minHeight: 44) // 确保最小触摸目标 44pt
                 .background(isSelected ? Color.blue : Color.gray.opacity(0.15))
                 .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(16)
+                .cornerRadius(22)
         }
         .buttonStyle(.plain)
     }

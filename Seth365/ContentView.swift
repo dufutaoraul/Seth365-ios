@@ -186,6 +186,26 @@ struct DraggableDownloadIndicator: View {
     @State private var isDragging = false
     @State private var isExpanded = true
 
+    /// 根据设备类型返回合适的文字区域最大宽度
+    private var textMaxWidth: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 240 : 160
+    }
+
+    /// 根据设备类型返回合适的字体
+    private var statusFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .callout : .caption
+    }
+
+    /// 根据设备类型返回合适的小字体
+    private var smallFont: Font {
+        UIDevice.current.userInterfaceIdiom == .pad ? .caption : .caption2
+    }
+
+    /// 根据设备类型返回合适的进度圆大小
+    private var circleSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
+    }
+
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .trailing, spacing: 4) {
@@ -195,18 +215,19 @@ struct DraggableDownloadIndicator: View {
                         VStack(alignment: .leading, spacing: 4) {
                             // 状态消息
                             Text(preloadService.statusMessage)
-                                .font(.caption)
+                                .font(statusFont)
                                 .fontWeight(.medium)
                                 .lineLimit(2)
+                                .fixedSize(horizontal: false, vertical: true)
                                 .foregroundColor(.primary)
 
                             // 下载进度
                             HStack(spacing: 4) {
                                 Text("download.progress".localized)
-                                    .font(.caption2)
+                                    .font(smallFont)
                                     .foregroundColor(.secondary)
                                 Text("\(preloadService.downloadedCount)/\(preloadService.totalCount)")
-                                    .font(.caption2)
+                                    .font(smallFont)
                                     .fontWeight(.bold)
                                     .foregroundColor(.blue)
                             }
@@ -214,30 +235,30 @@ struct DraggableDownloadIndicator: View {
                             // 警告提示
                             HStack(spacing: 4) {
                                 Image(systemName: "exclamationmark.triangle.fill")
-                                    .font(.system(size: 10))
+                                    .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10))
                                 Text("download.warning".localized)
-                                    .font(.caption2)
+                                    .font(smallFont)
                             }
                             .foregroundColor(.orange)
                         }
-                        .frame(maxWidth: 150)
+                        .frame(maxWidth: textMaxWidth)
                     }
 
                     // 圆形进度
                     ZStack {
                         Circle()
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 4)
-                            .frame(width: 44, height: 44)
+                            .stroke(Color.gray.opacity(0.3), lineWidth: UIDevice.current.userInterfaceIdiom == .pad ? 5 : 4)
+                            .frame(width: circleSize, height: circleSize)
 
                         Circle()
                             .trim(from: 0, to: preloadService.progress)
-                            .stroke(Color.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                            .frame(width: 44, height: 44)
+                            .stroke(Color.blue, style: StrokeStyle(lineWidth: UIDevice.current.userInterfaceIdiom == .pad ? 5 : 4, lineCap: .round))
+                            .frame(width: circleSize, height: circleSize)
                             .rotationEffect(.degrees(-90))
                             .animation(.linear(duration: 0.3), value: preloadService.progress)
 
                         Text("\(Int(preloadService.progress * 100))%")
-                            .font(.system(size: 11, weight: .bold))
+                            .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 13 : 11, weight: .bold))
                             .foregroundColor(.blue)
                     }
                 }

@@ -57,6 +57,11 @@ struct CalendarView: View {
         }
     }
 
+    /// 根据设备类型返回合适的导航按钮尺寸
+    private var navButtonSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
+    }
+
     /// 月份切换控制
     private var monthSwitcher: some View {
         HStack {
@@ -65,6 +70,8 @@ struct CalendarView: View {
                 Image(systemName: "chevron.left")
                     .font(.title3)
                     .foregroundColor(viewModel.canGoPrevious ? .primary : .gray.opacity(0.3))
+                    .frame(width: navButtonSize, height: navButtonSize)
+                    .contentShape(Rectangle())
             }
 
             Spacer()
@@ -81,10 +88,12 @@ struct CalendarView: View {
                 Image(systemName: "chevron.right")
                     .font(.title3)
                     .foregroundColor(viewModel.canGoNext ? .primary : .gray.opacity(0.3))
+                    .frame(width: navButtonSize, height: navButtonSize)
+                    .contentShape(Rectangle())
             }
         }
         .padding(.horizontal, 24)
-        .padding(.vertical, 16)
+        .padding(.vertical, 8)
     }
 
     /// 底部提示

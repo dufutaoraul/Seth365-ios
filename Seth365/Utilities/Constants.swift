@@ -28,8 +28,13 @@ enum Constants {
         static let cornerRadius: CGFloat = 12
         static let cardSpacing: CGFloat = 12
         static let padding: CGFloat = 16
-        static let calendarDaySize: CGFloat = 40
+        /// 日历单元格大小 - 已弃用，请使用 DayCell 中的动态计算
+        static let calendarDaySize: CGFloat = 44
         static let wallpaperCardHeight: CGFloat = 200
+        /// 最小触摸目标尺寸（Apple HIG 要求）
+        static let minTouchTarget: CGFloat = 44
+        /// iPad 最小触摸目标尺寸
+        static let minTouchTargetPad: CGFloat = 52
     }
 
     /// 颜色

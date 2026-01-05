@@ -12,6 +12,26 @@ struct DayCell: View {
     let item: DayItem
     let onTap: () -> Void
 
+    /// 根据设备类型返回合适的单元格大小
+    private var cellSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 52 : 44
+    }
+
+    /// 根据设备类型返回合适的日期字体大小
+    private var dayFontSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 18 : 16
+    }
+
+    /// 根据设备类型返回合适的小字体大小
+    private var smallFontSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 14 : 12
+    }
+
+    /// 根据设备类型返回合适的图标字体大小
+    private var iconFontSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 12 : 10
+    }
+
     var body: some View {
         Button(action: onTap) {
             ZStack {
@@ -30,16 +50,16 @@ struct DayCell: View {
                     case .unlocked:
                         // 已解锁：显示日期数字
                         Text("\(dayNumber)")
-                            .font(.system(size: 16, weight: item.isToday ? .bold : .regular))
+                            .font(.system(size: dayFontSize, weight: item.isToday ? .bold : .regular))
                             .foregroundColor(item.isToday ? .white : .primary)
 
                     case .locked:
                         // 未来日期：显示锁图标
                         VStack(spacing: 2) {
                             Image(systemName: "lock.fill")
-                                .font(.system(size: 10))
+                                .font(.system(size: iconFontSize))
                             Text("\(dayNumber)")
-                                .font(.system(size: 12))
+                                .font(.system(size: smallFontSize))
                         }
                         .foregroundColor(Constants.Colors.locked)
 
@@ -47,15 +67,15 @@ struct DayCell: View {
                         // 测试日期：显示禁止图标
                         VStack(spacing: 2) {
                             Image(systemName: "nosign")
-                                .font(.system(size: 10))
+                                .font(.system(size: iconFontSize))
                             Text("\(dayNumber)")
-                                .font(.system(size: 12))
+                                .font(.system(size: smallFontSize))
                         }
                         .foregroundColor(.gray.opacity(0.5))
                     }
                 }
             }
-            .frame(width: Constants.UI.calendarDaySize, height: Constants.UI.calendarDaySize)
+            .frame(width: cellSize, height: cellSize)
         }
         .disabled(item.isPlaceholder || item.cellState == .test)
     }

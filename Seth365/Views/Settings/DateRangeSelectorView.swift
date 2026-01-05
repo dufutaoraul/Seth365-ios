@@ -407,19 +407,26 @@ struct DayToggleButton: View {
         Calendar.current.component(.day, from: date)
     }
 
+    /// 根据设备类型返回合适的尺寸
+    private var buttonSize: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 44 : 36
+    }
+
     var body: some View {
         Button(action: action) {
             Text("\(dayNumber)")
                 .font(.caption)
-                .frame(width: 32, height: 32)
+                .frame(width: buttonSize, height: buttonSize)
                 .background(isSelected ? Color.blue : Color.clear)
                 .foregroundColor(isSelected ? .white : .primary)
-                .cornerRadius(16)
+                .cornerRadius(buttonSize / 2)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: buttonSize / 2)
                         .stroke(Color.gray.opacity(0.3), lineWidth: isSelected ? 0 : 1)
                 )
         }
+        .frame(minWidth: 44, minHeight: 44) // 确保最小触摸区域 44pt
+        .contentShape(Rectangle())
         .buttonStyle(.plain)
     }
 }

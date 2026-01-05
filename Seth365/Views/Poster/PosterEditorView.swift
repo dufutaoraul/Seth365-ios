@@ -225,11 +225,13 @@ struct PosterEditorView: View {
                     y: frameRect.midY
                 )
 
-            // 四个角的拖动手柄（小一点）
+            // 四个角的拖动手柄（确保触摸区域足够大）
             ForEach(corners, id: \.self) { corner in
                 Circle()
                     .fill(Color.red)
-                    .frame(width: 12, height: 12)
+                    .frame(width: 16, height: 16)
+                    .frame(width: 44, height: 44) // 扩大触摸区域到 44pt
+                    .contentShape(Circle().scale(2.75)) // 扩大点击区域
                     .position(cornerPosition(corner))
             }
         }
@@ -444,7 +446,7 @@ struct PosterEditorView: View {
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
+                .frame(minHeight: 44) // 确保最小高度 44pt
                 .background(viewModel.userQRCode != nil ? Color.blue : Color.gray)
                 .foregroundColor(.white)
                 .cornerRadius(12)
