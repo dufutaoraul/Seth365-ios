@@ -295,29 +295,90 @@ struct ShortcutsGuideView: View {
                 }
             }
 
-            // 必须关闭的选项
-            VStack(alignment: .leading, spacing: 8) {
-                Text("⚠️ 必须关闭以下选项：")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.red)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    settingRow("位置", "选择「锁定屏幕和主屏幕」", isToggle: false)
-                    settingRow("显示预览", "关闭", isToggle: true)
-                    settingRow("裁切到主体", "关闭", isToggle: true)
-                    settingRow("易读性模糊", "关闭", isToggle: true)
+            // 必须关闭的选项 - 更醒目的提示
+            VStack(alignment: .leading, spacing: 10) {
+                // 警告标题
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.red)
+                    Text("重要！必须手动关闭以下 3 个开关：")
+                        .font(.subheadline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
                 }
+
+                // 位置设置
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                    Text("位置")
+                        .font(.subheadline)
+                    Spacer()
+                    Text("锁定屏幕和主屏幕")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                }
+
+                Divider()
+
+                // 三个必须关闭的开关
+                VStack(alignment: .leading, spacing: 8) {
+                    toggleOffRow("显示预览", description: "关闭后自动设置，无需确认")
+                    toggleOffRow("裁剪到主体", description: "关闭后保持原图完整")
+                    toggleOffRow("易读性模糊", description: "关闭后壁纸不会变模糊")
+                }
+
+                // 补充说明
+                Text("💡 这些是 iOS 系统选项，需要手动关闭一次，之后就会记住设置")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 4)
             }
-            .padding(10)
+            .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.red.opacity(0.1))
-            .cornerRadius(8)
+            .background(Color.red.opacity(0.15))
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.red.opacity(0.5), lineWidth: 2)
+            )
             .padding(.leading, 40)
         }
         .padding()
         .background(Color(UIColor.secondarySystemBackground))
         .cornerRadius(10)
+    }
+
+    /// 必须关闭的开关行
+    private func toggleOffRow(_ name: String, description: String) -> some View {
+        HStack(spacing: 8) {
+            // 模拟关闭状态的开关图标
+            ZStack {
+                Capsule()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 36, height: 22)
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 18, height: 18)
+                    .offset(x: -7)
+            }
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(name)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(description)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            Text("← 关闭")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundColor(.red)
+        }
     }
 
     private func settingRow(_ name: String, _ value: String, isToggle: Bool) -> some View {
@@ -485,6 +546,11 @@ struct ShortcutsGuideView: View {
             faqItem(
                 question: "主屏幕壁纸变模糊了？",
                 answer: faqBlurryAnswer
+            )
+
+            faqItem(
+                question: "为什么「设定墙纸」动作有 3 个开关要手动关闭？",
+                answer: "这 3 个选项（显示预览、裁剪到主体、易读性模糊）是 iOS 系统的设置，App 无法控制默认值。好消息是：只需要关闭一次，系统会记住你的选择，以后就不用再设置了。"
             )
 
             faqItem(
