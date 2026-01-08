@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct Seth365App: App {
+    /// 使用 AppDelegate 处理后台下载
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     init() {
         // 启动时打印调试信息

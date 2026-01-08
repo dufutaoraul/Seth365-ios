@@ -2,7 +2,7 @@
 //  WallpaperPreloadService.swift
 //  Seth365
 //
-//  壁纸预加载服务 - 基于 R2 配置的智能同步
+//  壁纸预加载服务 - 基于 R2 配置的智能同步（支持后台下载）
 //
 
 import Foundation
@@ -35,11 +35,71 @@ class WallpaperPreloadService: ObservableObject {
     /// 错误消息
     @Published var errorMessage: String = ""
 
-    private init() {}
+    /// 后台下载管理器
+    private let backgroundDownloader = BackgroundDownloadManager.shared
+
+    /// Combine 订阅
+    private var cancellables = Set<AnyCancellable>()
+
+    private init() {
+        // 监听后台下载进度
+        setupBackgroundDownloadObservers()
+    }
+
+    /// 设置后台下载监听
+    private func setupBackgroundDownloadObservers() {
+        // 监听下载进度
+        backgroundDownloader.$progress
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] progress in
+                self?.progress = progress
+            }
+            .store(in: &cancellables)
+
+        // 监听完成数量
+        backgroundDownloader.$completedCount
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] count in
+                self?.downloadedCount = count
+            }
+            .store(in: &cancellables)
+
+        // 监听总数量
+        backgroundDownloader.$totalCount
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] count in
+                if count > 0 {
+                    self?.totalCount = count
+                }
+            }
+            .store(in: &cancellables)
+
+        // 监听下载状态
+        backgroundDownloader.$isDownloading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isDownloading in
+                self?.isLoading = isDownloading
+                if !isDownloading && (self?.totalCount ?? 0) > 0 {
+                    self?.statusMessage = "下载完成"
+                }
+            }
+            .store(in: &cancellables)
+
+        // 监听错误
+        backgroundDownloader.$errorMessage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let error = error {
+                    self?.hasError = true
+                    self?.errorMessage = error
+                }
+            }
+            .store(in: &cancellables)
+    }
 
     // MARK: - 主同步方法
 
-    /// 预加载壁纸（基于 R2 配置的智能同步）
+    /// 预加载壁纸（基于 R2 配置的智能同步，支持后台下载）
     @MainActor
     func preloadWallpapers() async {
         isLoading = true
@@ -95,9 +155,74 @@ class WallpaperPreloadService: ObservableObject {
             return
         }
 
+        statusMessage = "正在后台下载壁纸 (0/\(wallpapersToDownload.count))...可切换到其他应用"
+
+        // 5. 使用后台下载管理器下载壁纸
+        // 设置完成回调
+        backgroundDownloader.onAllDownloadsComplete = { [weak self] in
+            Task { @MainActor in
+                // 更新本地版本号
+                UserDefaultsManager.shared.wallpaperVersion = config.version
+                self?.statusMessage = "下载完成 (\(wallpapersToDownload.count) 张)"
+                appLog(.info, "后台下载全部完成", source: "Preload")
+            }
+        }
+
+        // 启动后台下载
+        backgroundDownloader.startDownloading(wallpapers: wallpapersToDownload)
+
+        // 注意：这里不再等待下载完成，下载会在后台继续
+        // 进度通过 Combine 订阅自动更新
+    }
+
+    /// 预加载壁纸（前台同步模式，用于需要等待完成的场景）
+    @MainActor
+    func preloadWallpapersSync() async {
+        isLoading = true
+        progress = 0.0
+        downloadedCount = 0
+        hasError = false
+        errorMessage = ""
+        statusMessage = "正在获取配置..."
+
+        // 1. 获取远程配置
+        let config = await WallpaperConfigService.shared.fetchConfig()
+
+        // 2. 检查版本号
+        let localVersion = UserDefaultsManager.shared.wallpaperVersion
+
+        if config.version == localVersion && localVersion > 0 {
+            statusMessage = "壁纸已是最新版本"
+            isLoading = false
+            return
+        }
+
+        // 3. 根据配置生成壁纸列表
+        let allWallpapers = generateWallpaperList(from: config)
+
+        // 4. 检查哪些需要下载
+        guard !allWallpapers.isEmpty else {
+            statusMessage = "没有可用的壁纸"
+            isLoading = false
+            return
+        }
+
+        let bundledWallpapers = allWallpapers.filter { $0.isInBundle }
+        let cachedWallpapers = allWallpapers.filter { !$0.isInBundle && isCached($0) }
+        let wallpapersToDownload = allWallpapers.filter { !$0.isInBundle && !isCached($0) }
+
+        totalCount = wallpapersToDownload.count
+
+        if wallpapersToDownload.isEmpty {
+            statusMessage = "所有壁纸已准备就绪 (\(allWallpapers.count) 张)"
+            UserDefaultsManager.shared.wallpaperVersion = config.version
+            isLoading = false
+            return
+        }
+
         statusMessage = "正在同步壁纸 (0/\(wallpapersToDownload.count))..."
 
-        // 5. 下载缺失的壁纸
+        // 5. 前台同步下载
         var successCount = 0
         var failedCount = 0
 
@@ -113,7 +238,6 @@ class WallpaperPreloadService: ObservableObject {
             downloadedCount = index + 1
             progress = Double(downloadedCount) / Double(totalCount)
 
-            // 每10张更新一次状态消息
             if downloadedCount % 10 == 0 || downloadedCount == totalCount {
                 statusMessage = "正在同步壁纸 (\(downloadedCount)/\(totalCount))..."
             }
