@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import AVKit
 
 /// 快捷指令配置引导页面
 struct ShortcutsGuideView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var userDefaults = UserDefaultsManager.shared
     @State private var selectedSection: GuideSection = .setup
+    @State private var showVideoPlayer = false
 
     enum GuideSection: String, CaseIterable {
         case setup = "配置步骤"
@@ -22,6 +24,9 @@ struct ShortcutsGuideView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
+                    // 视频教程按钮
+                    videoTutorialButton
+
                     // 顶部重要提示
                     importantTip
 
@@ -57,7 +62,46 @@ struct ShortcutsGuideView: View {
                     }
                 }
             }
+            .fullScreenCover(isPresented: $showVideoPlayer) {
+                VideoPlayerView()
+            }
         }
+    }
+
+    // MARK: - 视频教程按钮
+
+    private var videoTutorialButton: some View {
+        Button(action: { showVideoPlayer = true }) {
+            HStack(spacing: 12) {
+                Image(systemName: "play.circle.fill")
+                    .font(.title)
+                    .foregroundColor(.white)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("观看视频教程")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    Text("2分钟学会设置自动换壁纸")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.8))
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.white.opacity(0.6))
+            }
+            .padding()
+            .background(
+                LinearGradient(
+                    colors: [Color.purple, Color.blue],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .cornerRadius(12)
+        }
+        .padding(.horizontal)
     }
 
     // MARK: - 重要提示
@@ -289,11 +333,35 @@ struct ShortcutsGuideView: View {
                     Text("添加设定墙纸动作")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    Text("底部搜索「墙纸」→ 点击「设定墙纸」")
+                    Text("底部搜索「墙纸」→ 点击「设定墙纸照片」")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
+
+            // 墙纸显示灰色的解决方法
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 6) {
+                    Image(systemName: "info.circle.fill")
+                        .foregroundColor(.blue)
+                    Text("如果「墙纸」显示灰色无法选择：")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("1. 点击右下角「运行」按钮，先运行一次")
+                    Text("2. 运行后「墙纸」会变成蓝色")
+                    Text("3. 点击选择出现的壁纸选项即可")
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.blue.opacity(0.1))
+            .cornerRadius(8)
+            .padding(.leading, 40)
 
             // 必须关闭的选项 - 更醒目的提示
             VStack(alignment: .leading, spacing: 10) {
@@ -525,6 +593,12 @@ struct ShortcutsGuideView: View {
             }
 
             faqItem(
+                question: "快捷指令报错无法设置壁纸？",
+                answer: "请确保 iOS 系统已更新到最新版本。前往「设置 → 通用 → 软件更新」检查并更新。",
+                isHighlighted: true
+            )
+
+            faqItem(
                 question: "设置了定时，但壁纸没换？",
                 answer: faqTimingNotWorkAnswer
             )
@@ -632,4 +706,67 @@ struct ShortcutsGuideView: View {
 
 #Preview {
     ShortcutsGuideView()
+}
+
+// MARK: - 视频播放器视图
+
+struct VideoPlayerView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var player: AVPlayer?
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            if let player = player {
+                VideoPlayer(player: player)
+                    .ignoresSafeArea()
+            } else {
+                ProgressView()
+                    .tint(.white)
+            }
+
+            // 关闭按钮
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title)
+                            .foregroundColor(.white.opacity(0.8))
+                            .padding()
+                    }
+                }
+                Spacer()
+            }
+        }
+        .onAppear {
+            setupPlayer()
+        }
+        .onDisappear {
+            player?.pause()
+            player = nil
+        }
+    }
+
+    private func setupPlayer() {
+        // 配置音频会话，确保有声音
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("音频会话配置失败: \(error)")
+        }
+
+        guard let videoURL = Bundle.main.url(forResource: "shortcuts_guide", withExtension: "mp4") else {
+            print("视频文件未找到")
+            return
+        }
+        player = AVPlayer(url: videoURL)
+        player?.play()
+    }
+}
+
+#Preview {
+    VideoPlayerView()
 }
