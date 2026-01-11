@@ -42,11 +42,11 @@ struct Wallpaper: Identifiable, Equatable, Hashable {
     }
 
     /// 文件名
-    /// 统一格式: "{年后两位}.{月}.{日}.{类型}.png"
-    /// 示例: "25.12.21.CS1.png", "26.1.15.EH2.png"
+    /// 统一格式: "{年后两位}.{月}.{日}.{类型}.heic"
+    /// 示例: "25.12.21.CS1.heic", "26.1.15.EH2.heic"
     var fileName: String {
         let yearPrefix = year % 100  // 25 或 26
-        return "\(yearPrefix).\(month).\(day).\(language.rawValue)\(orientation.rawValue)\(index).png"
+        return "\(yearPrefix).\(month).\(day).\(language.rawValue)\(orientation.rawValue)\(index).heic"
     }
 
     /// 本地缓存路径
@@ -76,12 +76,18 @@ struct Wallpaper: Identifiable, Equatable, Hashable {
 
     /// 兼容旧代码的 bundlePath（不含扩展名）
     var bundlePath: String {
-        return fileName.replacingOccurrences(of: ".png", with: "")
+        return fileName.replacingOccurrences(of: ".heic", with: "")
     }
 
-    /// 远程 URL
+    /// 远程文件名（R2 存储使用 PNG 格式）
+    var remoteFileName: String {
+        let yearPrefix = year % 100
+        return "\(yearPrefix).\(month).\(day).\(language.rawValue)\(orientation.rawValue)\(index).png"
+    }
+
+    /// 远程 URL（R2 存储使用 PNG 格式）
     var remoteURL: URL? {
-        R2Config.wallpaperURL(year: year, month: month, fileName: fileName)
+        R2Config.wallpaperURL(year: year, month: month, fileName: remoteFileName)
     }
 
     /// 缓存键

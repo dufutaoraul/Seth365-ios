@@ -14,6 +14,7 @@ struct ContentView: View {
     @State private var showDownloadAlert = false
     @State private var pendingDownloadInfo: (count: Int, size: String)? = nil
     @StateObject private var preloadService = WallpaperPreloadService.shared
+    @StateObject private var updateService = AppUpdateService.shared
 
     var body: some View {
         ZStack {
@@ -40,10 +41,15 @@ struct ContentView: View {
                 // 设置页面
                 SettingsView()
                     .tabItem {
-                        Image(systemName: "gearshape")
-                        Text(LocalizedStringKey("tab.settings"))
+                        Label {
+                            Text(LocalizedStringKey("tab.settings"))
+                        } icon: {
+                            Image(systemName: "gearshape")
+                                .symbolRenderingMode(.hierarchical)
+                        }
                     }
                     .tag(2)
+                    .badge(updateService.hasUpdate ? "!" : nil)
             }
             .opacity(showSplash ? 0 : 1)
 
@@ -67,6 +73,10 @@ struct ContentView: View {
                 // 检查是否需要下载额外资源
                 Task {
                     await checkForDownloads()
+                }
+                // 检查 App Store 是否有新版本
+                Task {
+                    await updateService.checkForUpdate()
                 }
             }
         }

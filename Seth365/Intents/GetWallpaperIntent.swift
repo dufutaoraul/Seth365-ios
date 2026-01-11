@@ -220,14 +220,16 @@ struct GetTodayWallpaperIntent: AppIntent {
         processedImage = ImageProcessingService.shared.processImage(processedImage, mode: displayMode, targetSize: screenSize)
         appLog(.debug, "已处理显示模式: \(displayMode.displayName)", source: logSource)
 
-        // 转换为 IntentFile
+        // 转换为 IntentFile（使用 PNG 格式以确保兼容性）
         guard let imageData = processedImage.pngData() else {
             appLog(.error, "图片数据转换失败", source: logSource)
             throw GetWallpaperError.imageConversionFailed
         }
 
-        let file = IntentFile(data: imageData, filename: wallpaper.fileName, type: .png)
-        appLog(.success, "快捷指令执行完成, 返回文件: \(wallpaper.fileName) (\(imageData.count / 1024)KB)", source: logSource)
+        // 使用 .png 扩展名因为数据格式是 PNG
+        let outputFileName = wallpaper.fileName.replacingOccurrences(of: ".heic", with: ".png")
+        let file = IntentFile(data: imageData, filename: outputFileName, type: .png)
+        appLog(.success, "快捷指令执行完成, 返回文件: \(outputFileName) (\(imageData.count / 1024)KB)", source: logSource)
 
         return .result(value: file)
     }

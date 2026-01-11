@@ -45,19 +45,20 @@ enum AppInfo {
         if let path = Bundle.main.resourcePath {
             let dec2025Path = "\(path)/Wallpapers/25/12"
             if let files = try? FileManager.default.contentsOfDirectory(atPath: dec2025Path) {
-                let pngCount = files.filter { $0.hasSuffix(".png") }.count
-                if pngCount > 0 {
-                    info.append("2025.12: \(pngCount)张")
+                let heicCount = files.filter { $0.hasSuffix(".heic") }.count
+                if heicCount > 0 {
+                    info.append("2025.12: \(heicCount)张")
                 }
             }
 
             // 2026年各月
             for month in 1...12 {
-                let monthPath = "\(path)/Wallpapers/\(month)"
+                let monthStr = String(format: "%02d", month)
+                let monthPath = "\(path)/Wallpapers/26/\(monthStr)"
                 if let files = try? FileManager.default.contentsOfDirectory(atPath: monthPath) {
-                    let pngCount = files.filter { $0.hasSuffix(".png") }.count
-                    if pngCount > 0 {
-                        info.append("2026.\(month): \(pngCount)张")
+                    let heicCount = files.filter { $0.hasSuffix(".heic") }.count
+                    if heicCount > 0 {
+                        info.append("2026.\(month): \(heicCount)张")
                     }
                 }
             }
@@ -74,14 +75,15 @@ enum AppInfo {
             // 2025年12月
             let dec2025Path = "\(path)/Wallpapers/25/12"
             if let files = try? FileManager.default.contentsOfDirectory(atPath: dec2025Path) {
-                total += files.filter { $0.hasSuffix(".png") }.count
+                total += files.filter { $0.hasSuffix(".heic") }.count
             }
 
             // 2026年各月
             for month in 1...12 {
-                let monthPath = "\(path)/Wallpapers/\(month)"
+                let monthStr = String(format: "%02d", month)
+                let monthPath = "\(path)/Wallpapers/26/\(monthStr)"
                 if let files = try? FileManager.default.contentsOfDirectory(atPath: monthPath) {
-                    total += files.filter { $0.hasSuffix(".png") }.count
+                    total += files.filter { $0.hasSuffix(".heic") }.count
                 }
             }
         }
