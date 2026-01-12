@@ -7,8 +7,12 @@
 
 import AppIntents
 import SwiftUI
-import UIKit
 import UniformTypeIdentifiers
+
+#if os(iOS)
+import UIKit
+import Photos
+#endif
 
 /// 语言选项（用于 Shortcuts）
 enum LanguageOption: String, AppEnum {
@@ -104,6 +108,34 @@ enum DateRangeOption: String, AppEnum {
         return self
     }
 }
+
+/// 获取壁纸错误
+enum GetWallpaperError: Error, CustomLocalizedStringResourceConvertible {
+    case notUnlocked
+    case downloadFailed
+    case imageConversionFailed
+    case saveToPhotosFailed
+    case notSupported
+
+    var localizedStringResource: LocalizedStringResource {
+        switch self {
+        case .notUnlocked:
+            return "该日期的壁纸尚未解锁"
+        case .downloadFailed:
+            return "下载壁纸失败"
+        case .imageConversionFailed:
+            return "图片转换失败"
+        case .saveToPhotosFailed:
+            return "保存到相册失败，请检查权限"
+        case .notSupported:
+            return "此功能在当前平台不支持"
+        }
+    }
+}
+
+// MARK: - iOS 专用 Intent 实现
+
+#if os(iOS)
 
 /// 获取今日壁纸的 Intent
 struct GetTodayWallpaperIntent: AppIntent {
@@ -270,30 +302,7 @@ struct GetTodayWallpaperIntent: AppIntent {
     }
 }
 
-/// 获取壁纸错误
-enum GetWallpaperError: Error, CustomLocalizedStringResourceConvertible {
-    case notUnlocked
-    case downloadFailed
-    case imageConversionFailed
-    case saveToPhotosFailed
-
-    var localizedStringResource: LocalizedStringResource {
-        switch self {
-        case .notUnlocked:
-            return "该日期的壁纸尚未解锁"
-        case .downloadFailed:
-            return "下载壁纸失败"
-        case .imageConversionFailed:
-            return "图片转换失败"
-        case .saveToPhotosFailed:
-            return "保存到相册失败，请检查权限"
-        }
-    }
-}
-
 // MARK: - 保存壁纸到相册 Intent
-
-import Photos
 
 /// 保存壁纸到相册的 Intent（自动化时最实用）
 struct SaveWallpaperToPhotosIntent: AppIntent {
@@ -456,3 +465,5 @@ struct SaveWallpaperToPhotosIntent: AppIntent {
         }
     }
 }
+
+#endif

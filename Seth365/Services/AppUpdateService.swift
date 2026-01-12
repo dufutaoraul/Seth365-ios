@@ -6,8 +6,11 @@
 //
 
 import Foundation
-import UIKit
 import Combine
+
+#if os(iOS)
+import UIKit
+#endif
 
 /// App Store 版本检测服务
 class AppUpdateService: ObservableObject {
@@ -140,6 +143,7 @@ class AppUpdateService: ObservableObject {
 
     /// 打开 App Store 页面
     func openAppStore() {
+        #if os(iOS)
         // 如果有检测到的 URL，使用它
         if let url = appStoreURL {
             UIApplication.shared.open(url)
@@ -153,5 +157,6 @@ class AppUpdateService: ObservableObject {
         if let searchURL = URL(string: "https://apps.apple.com/cn/app/\(bundleID)") {
             UIApplication.shared.open(searchURL)
         }
+        #endif
     }
 }
