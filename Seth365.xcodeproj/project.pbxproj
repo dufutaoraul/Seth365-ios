@@ -55,6 +55,7 @@
 				E4811C0F2EEA892700875B64 /* Sources */,
 				E4811C102EEA892700875B64 /* Frameworks */,
 				E4811C112EEA892700875B64 /* Resources */,
+				E4811C992EEA892700875B64 /* Copy Wallpapers */,
 			);
 			buildRules = (
 			);
@@ -114,6 +115,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E4811C992EEA892700875B64 /* Copy Wallpapers */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Wallpapers";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Copy Wallpapers folder to app bundle\nWALLPAPERS_SRC=\"${SRCROOT}/Seth365/Resources/Wallpapers\"\nWALLPAPERS_DST=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Wallpapers\"\n\nif [ -d \"$WALLPAPERS_SRC\" ]; then\n    echo \"Copying Wallpapers from $WALLPAPERS_SRC to $WALLPAPERS_DST\"\n    rm -rf \"$WALLPAPERS_DST\"\n    cp -R \"$WALLPAPERS_SRC\" \"$WALLPAPERS_DST\"\n    echo \"Copied $(find \"$WALLPAPERS_DST\" -name '*.heic' | wc -l) wallpapers\"\nelse\n    echo \"Warning: Wallpapers source not found at $WALLPAPERS_SRC\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E4811C0F2EEA892700875B64 /* Sources */ = {
