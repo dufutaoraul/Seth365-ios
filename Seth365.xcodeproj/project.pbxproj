@@ -119,6 +119,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		E4811C992EEA892700875B64 /* Copy Wallpapers */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -129,7 +130,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Copy Wallpapers folder to app bundle\nWALLPAPERS_SRC=\"${SRCROOT}/Seth365/Resources/Wallpapers\"\nWALLPAPERS_DST=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Wallpapers\"\n\nif [ -d \"$WALLPAPERS_SRC\" ]; then\n    echo \"Copying Wallpapers from $WALLPAPERS_SRC to $WALLPAPERS_DST\"\n    rm -rf \"$WALLPAPERS_DST\"\n    cp -R \"$WALLPAPERS_SRC\" \"$WALLPAPERS_DST\"\n    echo \"Copied $(find \"$WALLPAPERS_DST\" -name '*.heic' | wc -l) wallpapers\"\nelse\n    echo \"Warning: Wallpapers source not found at $WALLPAPERS_SRC\"\nfi\n";
+			shellScript = "# Copy Wallpapers folder to app bundle\nWALLPAPERS_SRC=\"${SRCROOT}/Seth365/Resources/Wallpapers\"\nWALLPAPERS_DST=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Wallpapers\"\n\necho \"=== Copy Wallpapers Script ===\"\necho \"Source: $WALLPAPERS_SRC\"\necho \"Destination: $WALLPAPERS_DST\"\n\nif [ -d \"$WALLPAPERS_SRC\" ]; then\n    echo \"Copying Wallpapers...\"\n    rm -rf \"$WALLPAPERS_DST\"\n    cp -R \"$WALLPAPERS_SRC\" \"$WALLPAPERS_DST\"\n    COPIED=$(find \"$WALLPAPERS_DST\" -name '*.heic' | wc -l)\n    echo \"✓ Copied $COPIED wallpapers\"\nelse\n    echo \"ERROR: Wallpapers source not found!\"\n    exit 1\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -182,7 +183,7 @@
 				DEVELOPMENT_TEAM = UK4Z748253;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -244,7 +245,7 @@
 				DEVELOPMENT_TEAM = UK4Z748253;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
