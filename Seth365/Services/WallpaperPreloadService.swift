@@ -320,6 +320,7 @@ class WallpaperPreloadService: ObservableObject {
     }
 
     /// 生成默认壁纸列表（网络不可用时）
+    /// v1.3.1: 更新为全年 3008 张壁纸
     private func generateFallbackWallpaperList() -> [Wallpaper] {
         let calendar = Calendar.current
         var wallpapers: [Wallpaper] = []
@@ -335,25 +336,17 @@ class WallpaperPreloadService: ObservableObject {
             }
         }
 
-        // 2026年1月（1日 - 31日）
-        var jan2026Components = DateComponents()
-        jan2026Components.year = 2026
-        jan2026Components.month = 1
-        for day in 1...31 {
-            jan2026Components.day = day
-            if let date = calendar.date(from: jan2026Components) {
-                wallpapers.append(contentsOf: Wallpaper.allWallpapers(for: date))
-            }
-        }
-
-        // 2026年2月（1日 - 28日）
-        var feb2026Components = DateComponents()
-        feb2026Components.year = 2026
-        feb2026Components.month = 2
-        for day in 1...28 {
-            feb2026Components.day = day
-            if let date = calendar.date(from: feb2026Components) {
-                wallpapers.append(contentsOf: Wallpaper.allWallpapers(for: date))
+        // 2026年全年（1月 - 12月）
+        let daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        for month in 1...12 {
+            var components = DateComponents()
+            components.year = 2026
+            components.month = month
+            for day in 1...daysInMonth[month - 1] {
+                components.day = day
+                if let date = calendar.date(from: components) {
+                    wallpapers.append(contentsOf: Wallpaper.allWallpapers(for: date))
+                }
             }
         }
 

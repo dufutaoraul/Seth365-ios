@@ -47,12 +47,13 @@ struct WallpaperConfig: Codable {
     // MARK: - 默认配置（网络不可用时使用）
 
     /// 默认配置（硬编码，作为后备）
+    /// v1.3.1: 更新为全年 3008 张壁纸
     static let fallback = WallpaperConfig(
-        version: 1,
-        lastUpdated: "2025-12-21",
+        version: 2,
+        lastUpdated: "2026-01-12",
         startDate: "2025-12-21",
-        endDate: "2026-02-28",
-        totalCount: 560
+        endDate: "2026-12-31",
+        totalCount: 3008
     )
 }
 
@@ -92,6 +93,13 @@ class WallpaperConfigService {
             // 解析 JSON
             let config = try JSONDecoder().decode(WallpaperConfig.self, from: data)
             appLog(.info, "获取配置成功: version=\(config.version), range=\(config.startDate)~\(config.endDate)", source: "ConfigService")
+
+            // 如果本地 fallback 版本更高（内置了更多壁纸），使用本地配置
+            if WallpaperConfig.fallback.version > config.version {
+                appLog(.info, "本地配置版本更高 (\(WallpaperConfig.fallback.version) > \(config.version))，使用本地配置", source: "ConfigService")
+                return .fallback
+            }
+
             return config
 
         } catch {
