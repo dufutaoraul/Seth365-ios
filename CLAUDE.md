@@ -338,26 +338,42 @@ iOS **没有公开 API** 允许 App 直接设置壁纸。解决方案：
 | 2025-12-21 | 下载范围限制 | 仅下载 12/21 - 2/28（R2 实际存在的壁纸） |
 | 2025-12-21 | DateCellState 三态设计 | test/unlocked/locked 区分不同日期状态 |
 | 2025-12-21 | TabBar 简化为两个 | 首页（日历+壁纸）+ 设置 |
+| 2026-01-12 | v1.3.1 全年壁纸内置 | 内置完整 3008 张 HEIC 壁纸（561MB） |
+| 2026-01-12 | Copy Wallpapers 构建脚本 | 解决 Xcode 16 文件系统同步问题 |
+| 2026-01-12 | 禁用脚本沙盒 | ENABLE_USER_SCRIPT_SANDBOXING = NO |
+| 2026-01-12 | 配置版本优先级 | 本地 fallback 版本 > R2 远程版本时使用本地 |
 
 ---
 
-## 九、添加壁纸到 Xcode
+## 九、壁纸构建说明
 
-**重要**：Resources/Wallpapers 文件夹需要手动添加到 Xcode 项目：
+**v1.3.1 更新**：壁纸通过 Shell Script Build Phase 自动复制到 App Bundle。
 
-1. 打开 Xcode 项目
-2. 在左侧导航栏右键点击 `Seth365` 文件夹
-3. 选择 "Add Files to Seth365..."
-4. 选择 `Resources/Wallpapers` 文件夹
-5. **重要设置**：
-   - ✅ 勾选 "Copy items if needed"
-   - 选择 "Create folder references"（蓝色文件夹）
-   - ✅ 勾选 "Add to targets: Seth365"
-6. 点击 "Add"
+### 9.1 构建脚本（自动）
 
-验证添加成功：
-- Wallpapers 文件夹显示为蓝色图标
-- Build Phases → Copy Bundle Resources 中包含 Wallpapers
+项目已配置 "Copy Wallpapers" 构建阶段，每次构建时自动执行：
+- 源路径：`${SRCROOT}/Seth365/Resources/Wallpapers`
+- 目标路径：`${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Wallpapers`
+
+构建日志会显示：
+```
+=== Copy Wallpapers Script ===
+✓ Copied 3008 wallpapers
+```
+
+### 9.2 重要设置
+
+确保以下设置正确（已在项目中配置）：
+- `ENABLE_USER_SCRIPT_SANDBOXING = NO`（允许脚本访问文件）
+- Build Phase 中包含 "Copy Wallpapers" 脚本
+
+### 9.3 手动添加壁纸（备选方案）
+
+如果构建脚本失败，可手动添加：
+1. 右键点击 `Seth365` 文件夹 → "Add Files to Seth365..."
+2. 选择 `Resources/Wallpapers` 文件夹
+3. 选择 **"Create folder references"**（蓝色文件夹）
+4. 勾选 "Add to targets: Seth365"
 
 ---
 
