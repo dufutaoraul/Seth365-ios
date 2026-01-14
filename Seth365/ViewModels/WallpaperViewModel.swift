@@ -11,6 +11,7 @@ import SwiftUI
 import Combine
 
 /// 壁纸视图模型
+@MainActor
 class WallpaperViewModel: ObservableObject {
     /// 当前日期
     let date: Date
